@@ -1,0 +1,35 @@
+# Unity generated files
+/Temp/
+/Library/
+/Logs/
+/UserSettings/
+/obj/
+/bin/
+
+# Build results
+*.apk
+*.aab
+*.exe
+*.app
+*.ipa
+*.unitypackage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.DotSettings
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project files
+*.csproj
+*.sln.DotSettings
+
+# User-specific files
+*.suo
+*.user
