@@ -25,6 +25,19 @@ public class BikeController : MonoBehaviour
     [Tooltip("When enabled, read speed/steering from a UDP receiver instead of keyboard/gamepad.")]
     public bool useUdpInput = false;
     public BikeUdpReceiver udpReceiver;
+    [Tooltip("When enabled, accept external input (e.g. from VR adapter) via SetExternalInput()")]
+    public bool useExternalInput = false;
+
+    // External input values (set via SetExternalInput)
+    private float externalMoveInput = 0f;
+    private float externalTurnInput = 0f;
+
+    // Call from external code (VR adapter) to provide inputs in range [-1,1]
+    public void SetExternalInput(float move, float turn)
+    {
+        externalMoveInput = Mathf.Clamp(move, -1f, 1f);
+        externalTurnInput = Mathf.Clamp(turn, -1f, 1f);
+    }
 
     // Exposed read-only values for HUD or other scripts
     public float CurrentSpeed { get; private set; }      // m/s
@@ -58,8 +71,34 @@ public class BikeController : MonoBehaviour
     void Update()
     {
         bool usingUdp = useUdpInput && udpReceiver != null;
+        bool usingExternal = useExternalInput;
 
-        if (usingUdp)
+        if (usingExternal)
+        {
+            // Use inputs supplied externally (e.g., XR adapter)
+            MoveInput = externalMoveInput;
+            TurnInput = externalTurnInput;
+
+            // Forward speed handling based on external MoveInput
+            if (MoveInput > 0.01f)
+            {
+                CurrentSpeed += acceleration * MoveInput * Time.deltaTime;
+            }
+            else if (MoveInput < -0.01f)
+            {
+                CurrentSpeed -= brakingAcceleration * (-MoveInput) * Time.deltaTime;
+            }
+            else
+            {
+                CurrentSpeed -= naturalDrag * Time.deltaTime;
+            }
+
+            CurrentSpeed = Mathf.Clamp(CurrentSpeed, 0f, Mathf.Max(0.0001f, maxSpeed));
+
+            float targetSteeringAngle = TurnInput * maxSteeringAngle;
+            CurrentSteeringAngle = Mathf.MoveTowards(CurrentSteeringAngle, targetSteeringAngle, steeringResponseSpeed * Time.deltaTime);
+        }
+        else if (usingUdp)
         {
             // Use external values coming from UDP (already in m/s and degrees).
             MoveInput = 0f;
