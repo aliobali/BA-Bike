@@ -33,3 +33,9 @@ Thumbs.db
 # User-specific files
 *.suo
 *.user
+
+# Python tooling
+tools/__pycache__/
+*.pyc
+venv/
+.venv/
