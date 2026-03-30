@@ -57,6 +57,9 @@ tools/__pycache__/
 venv/
 .venv/
 
+# Text files (build cache, logs, etc)
+*.txt
+
 # Markdown documentation files
 *.md
 
