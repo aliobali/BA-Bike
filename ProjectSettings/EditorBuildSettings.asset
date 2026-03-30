@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/OutdoorsScene.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 35845fe01580c41289b024647b1d1c53, type: 3}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 4baf12a51362c4e5193d11171de2643f, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 47c7242d094ce4c798012ebf3122356b, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 384f740ade36a4f028fb58ccdddfa6ad, type: 2}
   m_UseUCBPForAssetBundles: 0

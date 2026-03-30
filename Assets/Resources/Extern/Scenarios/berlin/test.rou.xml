@@ -1,0 +1,24 @@
+<routes>
+    <vType id="car" accel="2.0" decel="4.5" sigma="0.5" length="5.0" maxSpeed="13.89"/>
+    
+    <!-- Auto-Flow -->
+    <route id="carRoute" edges="1105576712#0 1105576712#1 4543954 1162813522#1 1162806946#1 1143843530#1 1396822304#2 27927583#1 27927583#3 27927583#5 27927583#6 27927583#9 27927583#11 983380994#1"/>
+    <flow id="flow0" type="car" begin="0" end="3600" period="1" route="carRoute" departSpeed="max"/>
+    
+    
+
+    <vType id="bike" vClass="bicycle" accel="1.0" decel="3.0" sigma="0.5" length="1.8" maxSpeed="2.78"/>
+
+    <route id="r1" edges="24700550 1396650497#0 1396650497#1 1396650498#1 36954721#2 1143843530#1 1396822304#2 27927583#1 27927583#3 27927583#5 27927583#6 27927583#9 27927583#11 983380994#1"/>
+    <route id="r2" edges="24700550 1396650497#0 1396650497#1 1396650498#1 36954721#2 1143843527#1 1396043109#1 1396043109#2 25278674#2 25278674#3 25278674#4 25278674#5"/>
+    <route id="r3" edges="24700550 1396650497#0 1396650497#1 1396650498#1 36954721#2 -1143843528#0 -1162806946#0 -1162813522#0 -1396654243#0 -1105576712#0"/>
+
+	<!-- Fahrrad-Flow -->
+    <flow id="bikeFlow" type="bike" begin="0" end="3600" period="1" departSpeed="max">
+        <routeDistribution id="routedist1">
+            <route refId="r1" probability="0.34"/>
+            <route refId="r2" probability="0.33"/>
+            <route refId="r3" probability="0.33"/>
+        </routeDistribution>
+    </flow>
+</routes>

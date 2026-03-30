@@ -14,6 +14,23 @@
 *.ipa
 *.unitypackage
 
+# Unity-generated backup/build folders (do not commit)
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+*_BurstDebugInformation_DoNotShip/
+**/il2cppOutput/
+**/Managed/
+**/tempburstlibs/
+
+# Large texture and asset files (download separately)
+*.tif
+*.tiff
+*.png
+*.jpg
+*.jpeg
+*.exr
+*.psb
+*.psd
+
 # IDE
 .vscode/
 .idea/
@@ -39,3 +56,15 @@ tools/__pycache__/
 *.pyc
 venv/
 .venv/
+
+# Markdown documentation files
+*.md
+
+# Unity asset files (binary, generated)
+*.asset
+*.prefab
+*.brush
+*.meta
+
+# Large binary downloads and packages
+*.unitypackage

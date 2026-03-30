@@ -5,6 +5,14 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform bike; // Reference to the bike object
     public Vector3 offset = new Vector3(0, 2, -5);
+    
+    [Tooltip("Lock camera rigidly to bike (no smoothing) - best for VR")]
+    public bool rigidFollow = true;
+    
+    [Tooltip("Smoothing factor for camera movement (only used if rigidFollow is false)")]
+    [Range(0f, 20f)]
+    public float smoothSpeed = 10f;
+    
     [Tooltip("When true, the camera follow will be disabled while a VR device is active.")]
     public bool disableWhenVRActive = false;
     [Tooltip("When true and a VR device is active, the XR rig (camera parent) will follow the bike from behind while keeping HMD look rotation.")]
@@ -52,7 +60,15 @@ public class CameraFollow : MonoBehaviour
             }
 
             Vector3 desiredRigPosition = bike.position + bike.TransformDirection(offset);
-            rig.position = Vector3.Lerp(rig.position, desiredRigPosition, Time.deltaTime * 5f);
+            
+            if (rigidFollow)
+            {
+                rig.position = desiredRigPosition;
+            }
+            else
+            {
+                rig.position = Vector3.Lerp(rig.position, desiredRigPosition, Time.deltaTime * 5f);
+            }
 
             // Rotate the rig to face the bike on the Y-axis only (preserve head pitch/roll)
             Vector3 lookDir = bike.position - rig.position;
@@ -75,8 +91,22 @@ public class CameraFollow : MonoBehaviour
         // Calculate the desired position behind the bike (relative to bike rotation)
         Vector3 desiredPosition = bike.position + bike.TransformDirection(offset);
 
-        // Smoothly move the camera to the desired position
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * 5f);
+        // Move camera to desired position
+        if (rigidFollow)
+        {
+            // Rigid follow - camera locked to bike like sitting on the saddle
+            transform.position = desiredPosition;
+        }
+        else if (smoothSpeed > 0)
+        {
+            // Smooth follow with lag
+            transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * smoothSpeed);
+        }
+        else
+        {
+            // Instant follow (no smoothing)
+            transform.position = desiredPosition;
+        }
 
         // Make the camera look at the bike's position (slightly above)
         transform.LookAt(bike.position + Vector3.up * 1f);

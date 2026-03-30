@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="intersection1_bigger_no_priority.net.xml" />
+        <route-files value="test.rou.xml" />
+        <additional-files value="intersection1_bigger.poly.xml" />
+    </input>
+
+    <processing>
+        <ignore-route-errors value="true" />
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-steps value="18" />
+        <device.rerouting.adaptation-interval value="10" />
+    </routing>
+
+    <report>
+        <verbose value="true" />
+        <duration-log.statistics value="true" />
+        <no-step-log value="true" />
+    </report>
+
+    <gui_only>
+        <gui-settings-file value="intersection1_bigger.view.xml" />
+    </gui_only>
+    
+    <output>
+	    <tripinfo-output value="tripinfo.xml"/>
+	</output>
+
+</configuration>
