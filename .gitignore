@@ -26,6 +26,19 @@
 .DS_Store
 Thumbs.db
 
+# Asset Store & External Assets
+/Assets/ALP_Assets/
+/Assets/CompositionLayers/
+/Assets/Samples/
+/Assets/TextMesh Pro/
+/Assets/XR/
+/Assets/XRI/
+/Assets/Tree_Textures/
+/Assets/TutorialInfo/
+/Assets/*.brush
+/Assets/New\ Terrain*.asset
+/Assets/Readme.asset
+
 # Project files
 *.csproj
 *.sln.DotSettings
