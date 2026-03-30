@@ -67,5 +67,12 @@ venv/
 *.meta
 *.mat
 
+# External asset packs (download separately from asset store)
+/Assets/ALP_Assets/
+/Assets/RayznGames/
+/Assets/TextMesh Pro/
+/Assets/Samples/
+/Assets/TutorialInfo/
+
 # Large binary downloads and packages
 *.unitypackage
