@@ -65,6 +65,7 @@ venv/
 *.prefab
 *.brush
 *.meta
+*.mat
 
 # Large binary downloads and packages
 *.unitypackage
