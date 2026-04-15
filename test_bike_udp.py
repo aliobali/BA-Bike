@@ -11,11 +11,13 @@ import socket
 import time
 import math
 
+#run python3 test_bike_udp.py in terminal
+
 # UDP server (Unity) address
-UNITY_HOST = "172.20.10.2"  # HMD / remote target
+#UNITY_HOST = "172.20.10.2"  # HMD / remote target
 #UNITY_HOST = "192.168.0.159" Zuhause
 #UNITY_HOST = "192.168.1.191" TKN
-#UNITY_HOST = "127.0.0.1"  # localhost - send to this MacBook
+UNITY_HOST = "127.0.0.1"  # localhost - send to this MacBook
 SPEED_PORT = 4022
 STEERING_PORT = 5005
 

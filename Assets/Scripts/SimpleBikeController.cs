@@ -53,6 +53,9 @@ public class SimpleBikeController : MonoBehaviour
     public float wheelSpinMultiplier = 0.7f;
 
     [Header("Comfort Settings")]
+    [Tooltip("Allow steering to rotate bike even when not pedaling")]
+    public bool allowSteeringWithoutMovement = false;
+
     [Tooltip("Scale incoming speed (m/s) to tame motion")]
     public float speedScale = 0.5f;
 
@@ -65,6 +68,7 @@ public class SimpleBikeController : MonoBehaviour
     private float speedVelocity = 0f;
     private float wheelRotation = 0f;
     private Vector3 lastPosition;
+    private Quaternion handlebarInitialRotation;
 
     void Start()
     {
@@ -75,6 +79,12 @@ public class SimpleBikeController : MonoBehaviour
             {
                 Debug.LogError("SimpleBikeController: BikeUdpReceiver not found!");
             }
+        }
+        
+        // Cache initial handlebar rotation to use as baseline
+        if (handlebar != null)
+        {
+            handlebarInitialRotation = handlebar.localRotation;
         }
         
         lastPosition = transform.position;
@@ -95,6 +105,13 @@ public class SimpleBikeController : MonoBehaviour
         // Calculate target rotation based on steering
         float targetRotationRate = steeringNormalized * rotationSpeed;
         targetRotationRate = Mathf.Clamp(targetRotationRate, -maxRotationRate, maxRotationRate);
+        
+        // Only allow steering if: 1) Bike is moving, OR 2) Steering without movement is enabled
+        bool canSteer = (currentSpeed > 0.1f) || allowSteeringWithoutMovement;
+        if (!canSteer)
+        {
+            targetRotationRate = 0f;
+        }
         
         // Smoothly interpolate current rotation rate
         currentRotation = Mathf.Lerp(currentRotation, targetRotationRate, Time.deltaTime / Mathf.Max(0.01f, rotationSmoothTime));
@@ -129,7 +146,7 @@ public class SimpleBikeController : MonoBehaviour
         if (handlebar != null)
         {
             float handlebarAngle = steeringNormalized * maxHandlebarAngle;
-            handlebar.localRotation = Quaternion.Euler(0, handlebarAngle, 0);
+            handlebar.localRotation = handlebarInitialRotation * Quaternion.Euler(0, handlebarAngle, 0);
         }
 
         // Update wheel rotations
@@ -141,6 +158,12 @@ public class SimpleBikeController : MonoBehaviour
 
     void UpdateWheels()
     {
+        // Only rotate wheels if bike is actually moving (avoid jitter when speed approaches 0)
+        if (currentSpeed < 0.05f)
+        {
+            return;
+        }
+
         // Calculate rotation based on speed and wheel radius
         // Circumference = 2 * PI * radius
         // Rotations per second = speed / circumference

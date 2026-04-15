@@ -23,6 +23,7 @@ public class XRCameraSeatAnchor : MonoBehaviour
 
     private XRInputSubsystem inputSubsystem;
 
+    [System.Obsolete]
     void Awake()
     {
         if (xrOrigin == null) xrOrigin = FindObjectOfType<XROrigin>();

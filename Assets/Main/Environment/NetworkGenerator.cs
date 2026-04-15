@@ -27,18 +27,18 @@ public class NetworkGenerator : MonoBehaviour
     private Texture2D grasMap;
     private Texture2D intersectionMap;
     private Texture2D streetMap;
+    private Texture2D sidewalkMap;
+    public UnityEngine.Vector3 sumoOffset;
 
     // Private Variables
     private List<GameObject> junctionNodes = new List<GameObject>();
     private int tlCounter = 0;
     int sLCount = 0;
 
-    public UnityEngine.Vector3 sumoOffset;
-
-    private System.Random random = new (GameStatics.DefaultSeed);
+    private System.Random random = new(GameStatics.DefaultSeed);
 
     public void LoadNetwork(bool GenerateStreetLights = true)
-	{
+    {
         Debug.Log("Loading Network");
         //string netPath = Path.Combine(Application.streamingAssetsPath, netDataRouter);
         netType netData = ImportHelper.LoadXMLFile<netType>(netDataRouter);
@@ -46,15 +46,17 @@ public class NetworkGenerator : MonoBehaviour
         grasMap = Resources.Load<Texture2D>(@"Environment\Materials\Textures\T_Gras");
         intersectionMap = Resources.Load<Texture2D>(@"Environment\Materials\Textures\Intersection");
         streetMap = Resources.Load<Texture2D>(@"Environment\Materials\Textures\Street");
+        sidewalkMap = Resources.Load<Texture2D>(@"Environment\Materials\Textures\Sidewalk");
+
 
         // Get and Set Map Boundaries
         string[] boundaries = netData.location.convBoundary.Split(',');
-        float xMax = -float.Parse(boundaries[0], GameStatics.provider);
+        float xMax = float.Parse(boundaries[0], GameStatics.provider);
         float yMin = float.Parse(boundaries[1], GameStatics.provider);
-		float xMin = -float.Parse(boundaries[2], GameStatics.provider);
-		float yMax = float.Parse(boundaries[3], GameStatics.provider);
-
+        float xMin = float.Parse(boundaries[2], GameStatics.provider);
+        float yMax = float.Parse(boundaries[3], GameStatics.provider);
         sumoOffset = new UnityEngine.Vector3((xMax + xMin) / 2.0f, 0, (yMin + yMax) / 2.0f);
+        GameStatics.SumoOffset = sumoOffset;
 
         // Meta data
         string projParameter = netData.location.projParameter;
@@ -64,52 +66,68 @@ public class NetworkGenerator : MonoBehaviour
         Dictionary<string, List<connectionType>> connections;
         Dictionary<string, NetFileJunction> junctions;
         Dictionary<string, NetFileEdge> edges;
-		Dictionary<string, NetFileLane> lanes;
+        Dictionary<string, NetFileLane> lanes;
 
         LoadNetData(netData, out connections, out junctions, out edges, out lanes);
 
         // Generate Components
+        // -----------------------------------------------------------------------------------------
         Debug.Log("Start generating landscape");
         AddLandscape(yMin, xMin, yMax, xMax);
         Debug.Log("Finished generating");
+
+        Vector3 cornerA = new UnityEngine.Vector3(xMax, -0.01f, yMax);
+        Vector3 cornerB = new UnityEngine.Vector3(xMin, -0.01f, yMin);
+        //GameObject.Find("XR Origin (XR Rig)").transform.position = (cornerA + cornerB) / 2.0f;
+
+        GameObject junctionsObj = new GameObject("Junctions");
+        junctionsObj.transform.SetParent(gameObject.transform);
         Debug.Log("Start generating junctions");
-        AddJunctions(junctions);
+        AddJunctions(junctions, junctionsObj);
         Debug.Log("Finished generating");
 
-        foreach(NetFileEdge netFileEdge in edges.Values)
+        GameObject lanesObj = new GameObject("Lanes");
+        lanesObj.transform.SetParent(gameObject.transform);
+
+        GameObject streetLightsObj = new GameObject("StreetLights");
+        streetLightsObj.transform.SetParent(gameObject.transform);
+
+        foreach (NetFileEdge netFileEdge in edges.Values)
         {
             NetFileJunction junctionTo = netFileEdge.to;
             NetFileJunction junctionFrom = netFileEdge.from;
             AddTrafficLights(netFileEdge, junctionTo, lanes, connections);
-            
-            foreach(NetFileLane lane in netFileEdge.lanes)
+
+            foreach (NetFileLane lane in netFileEdge.lanes)
             {
-                AddLane(lane, junctionTo, junctionFrom);
+                AddLane(lane, junctionTo, junctionFrom, lanesObj);
             }
 
-            if(GenerateStreetLights)
+            if (GenerateStreetLights)
             {
                 NetFileLane netFileLane = netFileEdge.lanes[0];
-                AddStreetLights(netFileLane);
+                AddStreetLights(netFileLane, streetLightsObj);
             }
         }
 
-        LoadAndGenerateEnvironment(buildingRouter);
-	}
+        GameObject buildingsObj = new GameObject("Buildings");
+        buildingsObj.transform.SetParent(gameObject.transform);
+        LoadAndGenerateEnvironment(buildingRouter, buildingsObj);
+    }
 
     // Filter function for conncection, junctions, edges, lanes
     private void LoadNetData(
         netType netData,
-        out Dictionary<string, List<connectionType>> connections, 
-		out Dictionary<string, NetFileJunction> junctions, 
-		out Dictionary<string, NetFileEdge> edges, 
-		out Dictionary<string, NetFileLane> lanes
+        out Dictionary<string, List<connectionType>> connections,
+        out Dictionary<string, NetFileJunction> junctions,
+        out Dictionary<string, NetFileEdge> edges,
+        out Dictionary<string, NetFileLane> lanes
     )
     {
         connections = new Dictionary<string, List<connectionType>>();
-		junctions = new Dictionary<string, NetFileJunction>();
-		edges = new Dictionary<string, NetFileEdge>();
-		lanes = new Dictionary<string, NetFileLane>();
+        junctions = new Dictionary<string, NetFileJunction>();
+        edges = new Dictionary<string, NetFileEdge>();
+        lanes = new Dictionary<string, NetFileLane>();
 
         // Get all junctions
         foreach (junctionType junction in netData.junction)
@@ -118,7 +136,7 @@ public class NetworkGenerator : MonoBehaviour
             if (junction.type != junctionTypeType.@internal)
             {
                 NetFileJunction newJunction = new NetFileJunction(junction, ref lanes);
-                junctions.Add(junction.id, newJunction);   
+                junctions.Add(junction.id, newJunction);
             }
         }
 
@@ -135,7 +153,7 @@ public class NetworkGenerator : MonoBehaviour
 
             foreach (var lane in edge.Items)
             {
-                if(lane is laneType)
+                if (lane is laneType)
                 {
                     // Add all lanes which belong to this edge
                     newEdge.AddLane((laneType)lane, ref lanes);
@@ -154,13 +172,13 @@ public class NetworkGenerator : MonoBehaviour
             }
 
             NetFileEdge fromEdge;
-            if(!edges.TryGetValue(ct.from, out fromEdge))
+            if (!edges.TryGetValue(ct.from, out fromEdge))
             {
                 continue;
             }
 
             string fromLane = fromEdge.lanes[int.Parse(ct.fromLane)].Id;
-            if(connections.ContainsKey(fromLane))
+            if (connections.ContainsKey(fromLane))
             {
                 connections[fromLane].Add(ct);
             }
@@ -177,79 +195,101 @@ public class NetworkGenerator : MonoBehaviour
 
     private void AddLandscape(float yMin, float xMin, float yMax, float xMax)
     {
+        GameObject landscapeObj = new GameObject("Landscape");
+        landscapeObj.transform.SetParent(gameObject.transform);
+        landscapeObj.AddComponent<MeshFilter>();
+        landscapeObj.AddComponent<MeshRenderer>();
+        landscapeObj.AddComponent<MeshCollider>();
+
         Mesh landscape = new Mesh();
 
         UnityEngine.Vector3[] vertices = new UnityEngine.Vector3[4];
-		UnityEngine.Vector2[] uvs = new UnityEngine.Vector2[4];
-		int[] triangles = new int[6];
+        UnityEngine.Vector2[] uvs = new UnityEngine.Vector2[4];
+        int[] triangles = new int[6];
 
-		vertices[0] = new UnityEngine.Vector3(xMax, -0.01f, yMax) - sumoOffset + new Vector3(320, 0, 0);
-		vertices[1] = new UnityEngine.Vector3(xMax, -0.01f, yMin) - sumoOffset + new Vector3(320, 0, 0);
-		vertices[2] = new UnityEngine.Vector3(xMin, -0.01f, yMin) - sumoOffset + new Vector3(320, 0, 0);
-		vertices[3] = new UnityEngine.Vector3(xMin, -0.01f, yMax) - sumoOffset + new Vector3(320, 0, 0);
+        vertices[0] = new UnityEngine.Vector3(xMax, -0.01f, yMax) - sumoOffset;
+        vertices[1] = new UnityEngine.Vector3(xMax, -0.01f, yMin) - sumoOffset;
+        vertices[2] = new UnityEngine.Vector3(xMin, -0.01f, yMin) - sumoOffset;
+        vertices[3] = new UnityEngine.Vector3(xMin, -0.01f, yMax) - sumoOffset;
 
-		//make landscape a little bit large then sumo file defines
-		vertices[0] += vertices[0].normalized * 100.0f;
-		vertices[1] += vertices[1].normalized * 100.0f;
-		vertices[2] += vertices[2].normalized * 100.0f;
-		vertices[3] += vertices[3].normalized * 100.0f;
+        Vector3 center = (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4.0f;
+        Vector3 v1 = vertices[0] - center;
+        Vector3 v2 = vertices[1] - center;
+        v2 = Vector3.Cross(v1, Vector3.up).normalized * v2.magnitude;
+
+        vertices[0] = center + v1 + v2;
+        vertices[1] = center + v1 - v2;
+        vertices[2] = center - v1 - v2;
+        vertices[3] = center - v1 + v2;
+
+        //make landscape a little bit large then sumo file defines
+        vertices[0] += vertices[0].normalized * 100.0f;
+        vertices[1] += vertices[1].normalized * 100.0f;
+        vertices[2] += vertices[2].normalized * 100.0f;
+        vertices[3] += vertices[3].normalized * 100.0f;
 
 
-		uvs[0] = new Vector2(0, 0);
-		uvs[1] = new Vector2(0, yMax - yMin) / 2.0f;
-		uvs[2] = new Vector2(xMax - xMin, yMax - yMin) / 2.0f;
-		uvs[3] = new Vector2(xMax - xMin, 0) / 2.0f;
+        uvs[0] = new Vector2(0, 0);
+        uvs[1] = new Vector2(0, yMax - yMin) / 2.0f;
+        uvs[2] = new Vector2(xMax - xMin, yMax - yMin) / 2.0f;
+        uvs[3] = new Vector2(xMax - xMin, 0) / 2.0f;
 
-		triangles[0] = 0;
-		triangles[1] = 1;
-		triangles[2] = 2;
-		triangles[3] = 0;
-		triangles[4] = 2;
-		triangles[5] = 3;
+        triangles[0] = 0;
+        triangles[1] = 1;
+        triangles[2] = 2;
+        triangles[3] = 0;
+        triangles[4] = 2;
+        triangles[5] = 3;
 
-        ImportHelper.AddMesh(gameObject, landscape, vertices, uvs, triangles, grasMap);
-        MeshCollider landscapePhysic = gameObject.GetComponent<MeshCollider>();
+        ImportHelper.AddMesh(landscapeObj, landscape, vertices, uvs, triangles, grasMap);
+        MeshCollider landscapePhysic = landscapeObj.GetComponent<MeshCollider>();
         landscapePhysic.sharedMesh = landscape;
+        gameObject.isStatic = true;
     }
 
-    private void AddJunctions(in Dictionary<string, NetFileJunction> junctions)
+    private void AddJunctions(in Dictionary<string, NetFileJunction> junctions, GameObject parent)
     {
-        foreach(NetFileJunction junction in junctions.Values)
+        foreach (NetFileJunction junction in junctions.Values)
         {
             GameObject junctionNode = new GameObject("Junction " + junction.Id);
-            junctionNode.transform.SetParent(gameObject.transform);
+            junctionNode.transform.SetParent(parent.transform);
             junctionNode.AddComponent<MeshFilter>();
             junctionNode.AddComponent<MeshRenderer>();
+            junctionNode.isStatic = true;
 
             Mesh meshJunction = new Mesh();
             Vector3[] vertices = junction.Shape;
 
             // Skip if junction has not enough vertices to create a triangle
-            if(vertices.Length < 3)
+            if (vertices.Length < 3)
             {
                 continue;
             }
 
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = vertices[i] - sumoOffset;
+            }
+
             int[] triangles;
             // Use the triangulator to get indices for creating triangles
-            if(vertices.Length == 3)
+            if (vertices.Length == 3)
             {
                 triangles = new int[3];
                 triangles[0] = 1;
                 triangles[1] = 2;
                 triangles[2] = 0;
             }
-            else 
+            else
             {
                 triangles = Triangulator.Triangulate(vertices);
             }
 
             Vector2[] uvs = new Vector2[vertices.Length];
             float textureScale = 1; // .35f; // How often to repeat the texture per meter.
-            for(int i = 0; i < vertices.Length; i++)
+            for (int i = 0; i < vertices.Length; i++)
             {
                 uvs[i] = new Vector2(vertices[i].x * textureScale, vertices[i].z * textureScale);
-                vertices[i] -= sumoOffset; // Added because of the Landscape offset
             }
 
             /*
@@ -267,42 +307,42 @@ public class NetworkGenerator : MonoBehaviour
     {
         bool edgeHasTrafficLight = junction.JunctionType == junctionTypeType.traffic_light;
 
-		if (!edgeHasTrafficLight)
-		{
-			return;
-		}
+        if (!edgeHasTrafficLight)
+        {
+            return;
+        }
 
-		int edgeLaneCount = netFileEdge.lanes.Count;
+        int edgeLaneCount = netFileEdge.lanes.Count;
 
-		Vector3 lanesCenter = Vector3.zero;
-		float laneCenterWidth = 0;
-		Vector3 laneCenterDirection = Vector3.zero;
+        Vector3 lanesCenter = Vector3.zero;
+        float laneCenterWidth = 0;
+        Vector3 laneCenterDirection = Vector3.zero;
 
-		List<NetFileLane> edgeLanes = new List<NetFileLane>();
+        List<NetFileLane> edgeLanes = new List<NetFileLane>();
 
-		//Spawn traffic lights
-		for (int i = 0; i < edgeLaneCount; i++)
-		{
-			NetFileLane lane = netFileEdge.lanes[i];
-			edgeLanes.Add(lane);
+        //Spawn traffic lights
+        for (int i = 0; i < edgeLaneCount; i++)
+        {
+            NetFileLane lane = netFileEdge.lanes[i];
+            edgeLanes.Add(lane);
 
-			// Calculate the position (in line with the lane) coordinates of last two street vertices
-			Vector3 preLaneEndPoint = lane.Shape[lane.Shape.Length - 2] - sumoOffset;
-			Vector3 laneEndPoint = lane.Shape[lane.Shape.Length - 1] - sumoOffset;
+            // Calculate the position (in line with the lane) coordinates of last two street vertices
+            Vector3 preLaneEndPoint = lane.Shape[lane.Shape.Length - 2];
+            Vector3 laneEndPoint = lane.Shape[lane.Shape.Length - 1];
 
-			lanesCenter += laneEndPoint;
-			laneCenterWidth += lane.Width;
-			laneCenterDirection += (laneEndPoint - preLaneEndPoint).normalized;
-		}
+            lanesCenter += laneEndPoint;
+            laneCenterWidth += lane.Width;
+            laneCenterDirection += (laneEndPoint - preLaneEndPoint).normalized;
+        }
 
         lanesCenter /= edgeLaneCount;
-		laneCenterWidth = laneCenterWidth * 0.5f + 1.0f;
-		laneCenterDirection /= edgeLaneCount;
+        laneCenterWidth = laneCenterWidth * 0.5f + 1.0f;
+        laneCenterDirection /= edgeLaneCount;
 
         float angle = Mathf.Atan2(laneCenterDirection.x, laneCenterDirection.z) * Mathf.Rad2Deg;
 
         laneCenterDirection = Vector3.Cross(laneCenterDirection, Vector3.up);
-		laneCenterDirection = laneCenterDirection.normalized;
+        laneCenterDirection = laneCenterDirection.normalized;
 
         Vector3 trafficLightPosition = lanesCenter + laneCenterDirection * laneCenterWidth;
 
@@ -316,280 +356,280 @@ public class NetworkGenerator : MonoBehaviour
         // streets in Paderborn should be left traffic streets. The traffic pole should rotate to
         // driving direction (which it does not do yet)
         trafficLightObj.transform.rotation = Quaternion.Euler(-90f, angle + 90f, 0f);
+        trafficLightObj.isStatic = true;
 
         edgeLanes.Sort((x, y) => (x.Shape[x.Shape.Length - 1] - trafficLightPosition).sqrMagnitude.CompareTo((y.Shape[y.Shape.Length - 1] - trafficLightPosition).sqrMagnitude));
-        for(int i = 0; i < edgeLaneCount; i++)
-		{
-			NetFileLane lane = edgeLanes[i];
+        for (int i = 0; i < edgeLaneCount; i++)
+        {
+            NetFileLane lane = edgeLanes[i];
             int laneIndexInJunction = 0;
-            for(int laneCount = 0; laneCount < junction.IncomingLanes.Count; laneCount++)
-			{
-				NetFileLane incLane = junction.IncomingLanes[laneCount];
-                if(lane.Id == incLane.Id)
-				{
-					break;
-				}
+            for (int laneCount = 0; laneCount < junction.IncomingLanes.Count; laneCount++)
+            {
+                NetFileLane incLane = junction.IncomingLanes[laneCount];
+                if (lane.Id == incLane.Id)
+                {
+                    break;
+                }
                 else
-				{
-					List<connectionType> incLanesConnections;
-                    if(connections.TryGetValue(incLane.Id, out incLanesConnections))
-					{
-						laneIndexInJunction += incLanesConnections.Count;
-					}
-				}
-			}
+                {
+                    List<connectionType> incLanesConnections;
+                    if (connections.TryGetValue(incLane.Id, out incLanesConnections))
+                    {
+                        laneIndexInJunction += incLanesConnections.Count;
+                    }
+                }
+            }
 
-            TrafficLight light = trafficLightObj.GetComponent<TrafficLight>();
+            //TrafficLight light = trafficLightObj.GetComponent<TrafficLight>();
             //light.AddPoolExtension(i, trafficLightObj);
-            light.AddPoolExtension(tlCounter, trafficLightObj);
+            //light.AddPoolExtension(tlCounter, trafficLightObj);
 
             List<connectionType> lct;
-            if(connections.TryGetValue(lane.Id, out lct))
-			{
-				int totalPanels = lct.Count;
-                for(int currentPanelIndex = 0; currentPanelIndex < totalPanels; currentPanelIndex++)
-				{
-					connectionType ct = lct[currentPanelIndex];
-                    if((ct.tl == null) || string.Compare((ct.@from + "_" + ct.fromLane), lane.Id, StringComparison.OrdinalIgnoreCase) != 0)
-					{
-						continue;
-					}
+            if (connections.TryGetValue(lane.Id, out lct))
+            {
+                int totalPanels = lct.Count;
+                for (int currentPanelIndex = 0; currentPanelIndex < totalPanels; currentPanelIndex++)
+                {
+                    connectionType ct = lct[currentPanelIndex];
+                    if ((ct.tl == null) || string.Compare((ct.@from + "_" + ct.fromLane), lane.Id, StringComparison.OrdinalIgnoreCase) != 0)
+                    {
+                        continue;
+                    }
 
                     string tlId = "tl_" + MD5Hasher.getMD5(junction.Id) + "_" + laneIndexInJunction++;
-                    light.AddPanel(tlId, i, currentPanelIndex, totalPanels);
-				}
-			}
-		}
+                    //light.AddPanel(tlId, i, currentPanelIndex, totalPanels);
+                }
+            }
+        }
         tlCounter++;
     }
 
 
-    private void AddLane(in NetFileLane lane, in NetFileJunction junctionTo, in NetFileJunction junctionFrom)
+    private void AddLane(in NetFileLane lane, in NetFileJunction junctionTo, in NetFileJunction junctionFrom, GameObject parent)
     {
         GameObject laneNode = new GameObject();
         laneNode.name = $"Lane {lane.Id}";
-        laneNode.transform.SetParent(gameObject.transform);
+        laneNode.transform.SetParent(parent.transform);
         laneNode.AddComponent<MeshFilter>();
         laneNode.AddComponent<MeshRenderer>();
+        laneNode.isStatic = true;
 
         Mesh laneMesh = new Mesh();
 
-        float laneWidthPadding = 0.0f;
-		float laneWidth = lane.Width * 0.5f + laneWidthPadding;
+        float laneWidth = lane.Width * 0.5f;
 
         Vector3[] laneShape = lane.Shape;
         if (laneShape.Length < 2)
-		{
-			Debug.LogWarning($"Lane {lane.Id} has less than 2 vertices.");
-			return;
-		}
-
-        for(int i = 0; i < laneShape.Length; i++)
         {
-            laneShape[i] -= sumoOffset;
+            Debug.LogWarning($"Lane {lane.Id} has less than 2 vertices.");
+            return;
+        }
+
+        for (int i = 0; i < laneShape.Length; i++)
+        {
+            laneShape[i] = laneShape[i] - sumoOffset;
         }
 
         Vector3[] vertices = new Vector3[laneShape.Length * 2];
-		Vector2[] uvs = new Vector2[vertices.Length];
+        Vector2[] uvs = new Vector2[vertices.Length];
 
         int[] triangles = new int[(laneShape.Length - 1) * 2 * 3];
         //add start points
-		AddLaneEnds(junctionFrom, laneShape[0], laneShape[1], laneWidth, true, ref vertices);
+        AddLaneEnds(junctionFrom, laneShape[0], laneShape[1], laneWidth, true, ref vertices);
 
         triangles[0] = 1;
-		triangles[1] = 2;
-		triangles[2] = 0;
-		triangles[3] = 1;
-		triangles[4] = 3;
-		triangles[5] = 2;
+        triangles[1] = 2;
+        triangles[2] = 0;
+        triangles[3] = 1;
+        triangles[4] = 3;
+        triangles[5] = 2;
 
         //Build road between start and end
-		for (int i = 1; i < laneShape.Length - 1; i++)
-		{
-			triangles[i * 6] = i * 2 + 1;
-			triangles[i * 6 + 1] = i * 2 + 2;
-			triangles[i * 6 + 2] = i * 2;
-			triangles[i * 6 + 3] = i * 2 + 1;
-			triangles[i * 6 + 4] = i * 2 + 3;
-			triangles[i * 6 + 5] = i * 2 + 2;
+        for (int i = 1; i < laneShape.Length - 1; i++)
+        {
+            triangles[i * 6] = i * 2 + 1;
+            triangles[i * 6 + 1] = i * 2 + 2;
+            triangles[i * 6 + 2] = i * 2;
+            triangles[i * 6 + 3] = i * 2 + 1;
+            triangles[i * 6 + 4] = i * 2 + 3;
+            triangles[i * 6 + 5] = i * 2 + 2;
 
-			Vector3 lastDirection = laneShape[i - 1] - laneShape[i];
-			Vector3 nextDirection = laneShape[i + 1] - laneShape[i];
+            Vector3 lastDirection = laneShape[i - 1] - laneShape[i];
+            Vector3 nextDirection = laneShape[i + 1] - laneShape[i];
 
-			float lastLength = lastDirection.magnitude;
-			float nextLength = nextDirection.magnitude;
+            float lastLength = lastDirection.magnitude;
+            float nextLength = nextDirection.magnitude;
 
-			float lastFactor = 1, nextFactor = 1;
+            float lastFactor = 1, nextFactor = 1;
 
-			if (nextLength > lastLength)
-			{
-				nextFactor = lastLength / nextLength;
-			}
-			else
-			{
-				lastFactor = nextLength / lastLength;
-			}
+            if (nextLength > lastLength)
+            {
+                nextFactor = lastLength / nextLength;
+            }
+            else
+            {
+                lastFactor = nextLength / lastLength;
+            }
 
-			Vector3 direction =  lastDirection * lastFactor - nextFactor * nextDirection;
-			Vector3 rightVector = Vector3.Cross(direction, Vector3.up).normalized * laneWidth;
+            Vector3 direction = lastDirection * lastFactor - nextFactor * nextDirection;
+            Vector3 rightVector = Vector3.Cross(direction, Vector3.up).normalized * laneWidth;
 
-			vertices[i * 2] = ImportHelper.LineIntersection2D(vertices[(i - 1) * 2], lastDirection, laneShape[i], rightVector);
-			vertices[i * 2 + 1] = ImportHelper.LineIntersection2D(vertices[(i - 1) * 2 + 1], lastDirection, laneShape[i], rightVector);
-		}
+            vertices[i * 2] = ImportHelper.LineIntersection2D(vertices[(i - 1) * 2], lastDirection, laneShape[i], rightVector);
+            vertices[i * 2 + 1] = ImportHelper.LineIntersection2D(vertices[(i - 1) * 2 + 1], lastDirection, laneShape[i], rightVector);
+        }
 
         AddLaneEnds(junctionTo, laneShape[laneShape.Length - 1], laneShape[laneShape.Length - 2], laneWidth, false, ref vertices);
 
         float distanceLeft = 0;
         float distanceRight = 0;
-        for(int i = 0; i < uvs.Length; i += 2)
+        for (int i = 0; i < uvs.Length; i += 2)
         {
-            if(i >= 2)
+            if (i >= 2)
             {
                 distanceLeft += (vertices[i] - vertices[i - 2]).magnitude / lane.Width;
-				distanceRight += (vertices[i+1] - vertices[i - 1]).magnitude / lane.Width;
+                distanceRight += (vertices[i + 1] - vertices[i - 1]).magnitude / lane.Width;
             }
             uvs[i] = new Vector2(0, distanceLeft);
-			uvs[i+1] = new Vector2(1, distanceRight);
+            uvs[i + 1] = new Vector2(1, distanceRight);
         }
-
-        ImportHelper.AddMesh(laneNode, laneMesh, vertices, uvs, triangles, streetMap);
+        if (lane.Allow.Contains("pedestrian"))
+        {
+            ImportHelper.AddMesh(laneNode, laneMesh, vertices, uvs, triangles, sidewalkMap);
+        }
+        else
+        {
+            ImportHelper.AddMesh(laneNode, laneMesh, vertices, uvs, triangles, streetMap);
+        }
     }
 
     private void AddLaneEnds(in NetFileJunction junction, UnityEngine.Vector3 shapePoint1, UnityEngine.Vector3 shapePoint2, float laneWidth, bool isStart, ref UnityEngine.Vector3[] vertices)
     {
         int shapeLength = junction.Shape.Length;
-		int bestIndex = 0;
-		Vector3 junctionIntersection = Vector3.zero;
+        int bestIndex = 0;
+        Vector3 junctionIntersection = Vector3.zero;
 
-		float bestDistance = float.MaxValue;
+        float bestDistance = float.MaxValue;
 
-		for (int i = 0; i < shapeLength; i++)
-		{
-			Vector3 testPoint;
-			bool isInSegment = ImportHelper.ClosestPointOnSegment(shapePoint1, junction.Shape[i], junction.Shape[(i + 1) % shapeLength], out testPoint);
+        for (int i = 0; i < shapeLength; i++)
+        {
+            Vector3 testPoint;
+            bool isInSegment = ImportHelper.ClosestPointOnSegment(shapePoint1, junction.Shape[i], junction.Shape[(i + 1) % shapeLength], out testPoint);
 
-			float distanceSq = (testPoint - shapePoint1).sqrMagnitude;
-			if (distanceSq < bestDistance)
-			{
-				bestIndex = i;
-				bestDistance = distanceSq;
+            float distanceSq = (testPoint - shapePoint1).sqrMagnitude;
+            if (distanceSq < bestDistance)
+            {
+                bestIndex = i;
+                bestDistance = distanceSq;
 
-				
-				junctionIntersection = isInSegment ? testPoint : shapePoint1;
-			}
-		}
 
-		Vector3 rightVector = (junction.Shape[bestIndex] - junction.Shape[(bestIndex + 1) % shapeLength]).normalized * laneWidth;
+                junctionIntersection = isInSegment ? testPoint : shapePoint1;
+            }
+        }
 
-		Vector3 fDirection = Vector3.Cross((shapePoint1 - shapePoint2), Vector3.up);
+        Vector3 rightVector = (junction.Shape[bestIndex] - junction.Shape[(bestIndex + 1) % shapeLength]).normalized * laneWidth;
 
-		rightVector = Vector3.Scale(ImportHelper.Abs(rightVector), ImportHelper.Sign(fDirection));
-		
+        Vector3 fDirection = Vector3.Cross((shapePoint1 - shapePoint2), Vector3.up);
 
-		vertices[isStart ? 0 : vertices.Length - 1] = junctionIntersection + rightVector;
-		vertices[isStart ? 1 : vertices.Length - 2] = junctionIntersection - rightVector;
+        rightVector = Vector3.Scale(ImportHelper.Abs(rightVector), ImportHelper.Sign(fDirection));
+
+
+        vertices[isStart ? 0 : vertices.Length - 1] = junctionIntersection + rightVector;
+        vertices[isStart ? 1 : vertices.Length - 2] = junctionIntersection - rightVector;
     }
 
-    private void AddStreetLights(NetFileLane netFileLane)
+    private void AddStreetLights(NetFileLane netFileLane, GameObject parent)
     {
-        if(netFileLane.Allow.Contains("pedestrian"))
+        if (netFileLane.Allow.Contains("pedestrian"))
         {
             return;
         }
-        if(netFileLane.Length < 2.0f) return;
-        
+        if (netFileLane.Length < 2.0f) return;
+
         float streetLightSpace = 25.0f;
         int numberOfLights = Mathf.FloorToInt(netFileLane.Length / streetLightSpace);
-        
+
         float distanceToNext = (netFileLane.Length - (numberOfLights * streetLightSpace)) / 2.0f;
         numberOfLights++;
 
-        for(int i = 1; i < netFileLane.Shape.Length; i++)
+        for (int i = 1; i < netFileLane.Shape.Length; i++)
         {
-            Vector3 startPoint = netFileLane.Shape[i-1];
+            Vector3 startPoint = netFileLane.Shape[i - 1];
             Vector3 endPoint = netFileLane.Shape[i];
 
             Vector3 direction = endPoint - startPoint;
             float length = direction.magnitude;
             direction /= length;
-            
+
             float currentLength = 0;
 
-            while(currentLength + distanceToNext <= length)
+            while (currentLength + distanceToNext <= length)
             {
                 currentLength += distanceToNext;
-				distanceToNext = streetLightSpace;
+                distanceToNext = streetLightSpace;
 
                 Vector3 orthogonal = Vector3.Cross(direction, Vector3.up).normalized;
                 // Vector3 origin = startPoint + direction * currentLength + orthogonal * 3.5f;
-				Vector3 origin = startPoint + direction * currentLength + orthogonal * 5.5f;
+                Vector3 origin = startPoint + direction * currentLength + orthogonal * 5.5f;
 
                 GameObject streetLightPrefab = Resources.Load<GameObject>(GameStatics.streetLightPath);
                 GameObject streetLightObj = GameObject.Instantiate(streetLightPrefab);
+                streetLightObj.transform.SetParent(parent.transform);
                 streetLightObj.name = $"StreetLight {sLCount++}";
                 streetLightObj.name = $"StreetLight {netFileLane.Id}";
-        
+
                 streetLightObj.transform.position = origin;
                 streetLightObj.transform.rotation = Quaternion.FromToRotation(streetLightObj.transform.right, -direction);
+                streetLightObj.isStatic = true;
             }
             distanceToNext -= (length - currentLength);
         }
     }
 
-    private void LoadAndGenerateEnvironment(string shapesFilePath)
+    private void LoadAndGenerateEnvironment(string shapesFilePath, GameObject parent)
     {
         additionalType additional = ImportHelper.LoadXMLFile<additionalType>(shapesFilePath);
 
         if (additional is null)
-		{
-			Debug.Log("poly.xml is invalid.");
-			return;
-		}
+        {
+            Debug.Log("poly.xml is invalid.");
+            return;
+        }
 
         int invalidTypesCount = 0;
         foreach (object item in additional.Items)
-		{
-			switch(item)
-			{
-				case polygonType p:
-				    AddPolygonType(p);
-					break;
-
-				case poiType p:
-					// AddPOI(p);
-					break;
-
-				case parkingAreaType p:
-					break;
-
-				default:
-					invalidTypesCount++;
-					break;
-			}
-		}
-    }
-
-    private void AddPolygonType(polygonType p)
-    {
-        bool building = p.type.ToLower().Contains("building");
-        if(building)
         {
-            GameObject newBuilding = new GameObject();
-            newBuilding.AddComponent<MeshFilter>();
-            newBuilding.AddComponent<MeshRenderer>();
-            DynamicBuilding build = newBuilding.AddComponent<DynamicBuilding>();
-            build.CreateBuilding(p, random.Next(int.MaxValue), sumoOffset);
+            switch (item)
+            {
+                case polygonType p:
+                    AddPolygonType(p, parent);
+                    break;
+
+                case poiType p:
+                    // AddPOI(p);
+                    break;
+
+                case parkingAreaType p:
+                    break;
+
+                default:
+                    invalidTypesCount++;
+                    break;
+            }
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-	{
-	}
-
-    // Update is called once per frame
-    void Update()
+    private void AddPolygonType(polygonType p, GameObject parent)
     {
-        
+        bool building = p.type.ToLower().Contains("building");
+        if (building)
+        {
+            GameObject newBuilding = new GameObject();
+            newBuilding.transform.SetParent(parent.transform);
+            newBuilding.AddComponent<MeshFilter>();
+            newBuilding.AddComponent<MeshRenderer>();
+            DynamicBuilding build = newBuilding.AddComponent<DynamicBuilding>();
+            build.CreateBuilding(p, random.Next(int.MaxValue), GameStatics.SumoOffset, newBuilding);
+            newBuilding.isStatic = true;
+        }
     }
 }

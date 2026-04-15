@@ -4,48 +4,47 @@ using Env3d.SumoImporter.NetFileComponents;
 using System;
 using System.Collections.Generic;
 
-public class DynamicBuilding: MonoBehaviour
+public class DynamicBuilding : MonoBehaviour
 {
-    private Material wallMaterial1;
-    private Material wallMaterial2;
-    private Material wallMaterial3;
+	private Material wallMaterial1;
+	private Material wallMaterial2;
+	private Material wallMaterial3;
 
-    private System.Random random;
+	private System.Random random;
 
-    // Assets
-    private GameObject windowPrefab;
+	// Assets
+	private GameObject windowPrefab;
 
-    // Building set 1
-    private Material wallMaterialBT2;
+	// Building set 1
+	private Material wallMaterialBT2;
 	private Material wallMaterialBT3;
 	private Material wallMaterialBT4;
 	private Material wallMaterialBT5;
-    private Material wallWindowMaterialBT2;
+	private Material wallWindowMaterialBT2;
 	private Material wallWindowMaterialBT3;
 	private Material wallWindowMaterialBT4;
 	private Material wallWindowMaterialBT5;
-    private GameObject WindowSet1Large;
-    private GameObject WindowSet1Two;
+	private GameObject WindowSet1Large;
+	private GameObject WindowSet1Two;
 
-    public void CreateBuilding(polygonType p, int Seed, Vector3 sumoOffset)
-    {
-        random = new System.Random(Seed);
-        CreateMeshFromPolygonType(p, sumoOffset);
-    }
-
-	private void CreateMeshFromPolygonType(polygonType p, Vector3 sumoOffset)
+	public void CreateBuilding(polygonType p, int Seed, Vector3 sumoOffset, GameObject parent)
 	{
+		random = new System.Random(Seed);
+		CreateMeshFromPolygonType(p, sumoOffset, parent);
+	}
+
+	private void CreateMeshFromPolygonType(polygonType p, Vector3 sumoOffset, GameObject parent)
+	{
+		Debug.Log(sumoOffset);
 		PolygonBaseShape shape;
 		Material pMaterial = GetRandomWallMaterial();
 		Vector3[] shapePoints = ImportHelper.ConvertShapeString(p.shape);
-		Vector3 buildingCenter = Vector3.zero;
-
-		for(var i = 0; i < shapePoints.Length; i++)
+		for (int i = 0; i < shapePoints.Length; i++)
 		{
-			shapePoints[i] -= sumoOffset;
+			shapePoints[i] = shapePoints[i] - sumoOffset;
 		}
-
-		foreach(Vector3 point in shapePoints)
+		Vector3 buildingCenter = Vector3.zero;
+		foreach (Vector3 point in shapePoints)
 		{
 			buildingCenter += point;
 		}
@@ -54,7 +53,7 @@ public class DynamicBuilding: MonoBehaviour
 		gameObject.transform.position = buildingCenter;
 
 		// Center the shape points
-		for(int i = 0; i < shapePoints.Length; i++)
+		for (int i = 0; i < shapePoints.Length; i++)
 		{
 			shapePoints[i] -= buildingCenter;
 		}
@@ -82,7 +81,7 @@ public class DynamicBuilding: MonoBehaviour
 		}
 		*/
 
-		if(p.fill != boolType.Item0)
+		if (p.fill != boolType.Item0)
 		{
 			shape = new PolygonBaseShape(p.id, p.type, new List<Vector3>(shapePoints));
 			shape.FixOrder();
@@ -97,9 +96,9 @@ public class DynamicBuilding: MonoBehaviour
 		List<Vector2> uvsList = new List<Vector2>();
 		List<int> trianglesList = new List<int>();
 
-        float wallHeight = random.Next(5, 10) * 2.5f;
+		float wallHeight = random.Next(5, 10) * 2.5f;
 
-        List<List<Vector3>> fillWalls = new List<List<Vector3>>();
+		List<List<Vector3>> fillWalls = new List<List<Vector3>>();
 
 		for (int i = 0; i < shape.Count; i++)
 		{
@@ -119,8 +118,8 @@ public class DynamicBuilding: MonoBehaviour
 				{
 					if (!wasLast && random.NextDouble() < 0.33)
 					{
-						Vector3 start = startPos + direction / wallLength * ((offset-2.0f) + j * 4);
-						Vector3 end = startPos + direction / wallLength * ((offset+2.0f) + j * 4);
+						Vector3 start = startPos + direction / wallLength * ((offset - 2.0f) + j * 4);
+						Vector3 end = startPos + direction / wallLength * ((offset + 2.0f) + j * 4);
 						List<Vector3> fillWall = new List<Vector3>();
 						fillWall.Add(start);
 						fillWall.Add(end);
@@ -130,7 +129,7 @@ public class DynamicBuilding: MonoBehaviour
 					else
 					{
 						wasLast = false;
-						Vector3 orign = startPos + direction / wallLength * (offset + j * 4);   
+						Vector3 orign = startPos + direction / wallLength * (offset + j * 4);
 						Quaternion rotation;
 
 						for (float k = 0; k < wallHeight; k = k + 2.5f)
@@ -138,15 +137,16 @@ public class DynamicBuilding: MonoBehaviour
 							WindowSet1Large = Resources.Load<GameObject>(GameStatics.buildingPath + "/Set1/building_assets_set1_WallOneWindowLarge");
 							WindowSet1Two = Resources.Load<GameObject>(GameStatics.buildingPath + "/Set1/building_assets_set1_WallTwoWindows");
 							GameObject windowWall = random.Next(2) == 0 ? GameObject.Instantiate(WindowSet1Two) : GameObject.Instantiate(WindowSet1Large);
+							windowWall.transform.parent = parent.transform;
 							rotation = Quaternion.FromToRotation(windowWall.transform.right, direction);
 							windowWall.transform.position = gameObject.transform.position + orign + Vector3.up * k;
 							windowWall.transform.rotation = rotation;
 
 							Renderer renderer = windowWall.GetComponent<Renderer>();
 							Material[] mats = renderer.materials;
-							for(var l = 0; l < mats.Length; l++)
+							for (var l = 0; l < mats.Length; l++)
 							{
-								if(mats[l].name.Contains("Wall"))
+								if (mats[l].name.Contains("Wall"))
 								{
 									mats[l] = pMaterial;
 									renderer.materials = mats;
@@ -155,7 +155,7 @@ public class DynamicBuilding: MonoBehaviour
 						}
 					}
 				}
-				
+
 				List<Vector3> fillWallStart = new List<Vector3>();
 				fillWallStart.Add(startPos);
 				fillWallStart.Add(startPos + direction / wallLength * (offset - 2.0f));
@@ -175,23 +175,23 @@ public class DynamicBuilding: MonoBehaviour
 			}
 		}
 
-		foreach(List<Vector3> fillWall in fillWalls)
+		foreach (List<Vector3> fillWall in fillWalls)
 		{
 			BuildWall(fillWall.ToArray(), wallHeight, ref verticesList, ref trianglesList, ref uvsList);
 		}
 
-        Vector3[] vertices = verticesList.ToArray();
+		Vector3[] vertices = verticesList.ToArray();
 		Vector2[] uvs = uvsList.ToArray();
 		int[] triangles = trianglesList.ToArray();
 
 		Vector3[] normals;
 		float[] tangents;
 		ImportHelper.CalculateNormals(vertices, triangles, uvs, out normals, out tangents);
-        Mesh mesh = new Mesh();
+		Mesh mesh = new Mesh();
 		ImportHelper.AddMesh(gameObject, mesh, vertices, uvs, triangles, null, pMaterial);
 	}
 
-    private void BuildWall(Vector3[] shape, float Height, ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uvs)
+	private void BuildWall(Vector3[] shape, float Height, ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uvs)
 	{
 		float totalWallLength = 0;
 
@@ -208,7 +208,7 @@ public class DynamicBuilding: MonoBehaviour
 			Vector3 wallTopPoint = startPos + new Vector3(0, Height, 0);
 			vertices.Add(startPos);
 			vertices.Add(wallTopPoint);
-		
+
 			uvs.Add(new Vector2(totalWallLength, 0));
 			uvs.Add(new Vector2(totalWallLength, Height / 2.0f));
 
@@ -220,16 +220,16 @@ public class DynamicBuilding: MonoBehaviour
 				triangles.Add(triangleOffset + i * 2 + 2);
 				triangles.Add(triangleOffset + i * 2 + 1);
 
-				
+
 				triangles.Add(triangleOffset + i * 2 + 1);
 				triangles.Add(triangleOffset + i * 2 + 2);
 				triangles.Add(triangleOffset + i * 2 + 3);
-				
+
 			}
 		}
 	}
 
-    private Material GetRandomWallMaterial()
+	private Material GetRandomWallMaterial()
 	{
 		switch (random.Next(4))
 		{
@@ -255,24 +255,24 @@ public class DynamicBuilding: MonoBehaviour
 		}
 	}
 
-    void Awake()
-    {
-        wallMaterial1 = Resources.Load<Material>(@"Environment/Materials/M_Wall1");
-        wallMaterial2 = Resources.Load<Material>(@"Environment/Materials/M_Wall2");
-        wallMaterial3 = Resources.Load<Material>(@"Environment/Materials/M_Wall3");
+	void Awake()
+	{
+		wallMaterial1 = Resources.Load<Material>(@"Environment/Materials/M_Wall1");
+		wallMaterial2 = Resources.Load<Material>(@"Environment/Materials/M_Wall2");
+		wallMaterial3 = Resources.Load<Material>(@"Environment/Materials/M_Wall3");
 
-        // Assets
-        windowPrefab = Resources.Load<GameObject>(GameStatics.buildingPath + "/Window");
+		// Assets
+		windowPrefab = Resources.Load<GameObject>(GameStatics.buildingPath + "/Window");
 
-        // Building set 1
-        wallMaterialBT2 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_Yellow");
-        wallMaterialBT3 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_Grey");
-        wallMaterialBT4 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_Brown");
-        wallMaterialBT5 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_DarkYellow");
-        wallWindowMaterialBT2 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_Yellow.material");
-        wallWindowMaterialBT3 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_Grey.material");
-        wallWindowMaterialBT4 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_Brown.material");
-        wallWindowMaterialBT5 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_DarkYellow.material");
-    }
+		// Building set 1
+		wallMaterialBT2 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_Yellow");
+		wallMaterialBT3 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_Grey");
+		wallMaterialBT4 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_Brown");
+		wallMaterialBT5 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/Wall_DarkYellow");
+		wallWindowMaterialBT2 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_Yellow.material");
+		wallWindowMaterialBT3 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_Grey.material");
+		wallWindowMaterialBT4 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_Brown.material");
+		wallWindowMaterialBT5 = Resources.Load<Material>(GameStatics.buildingPath + "/Set1/WallWindow_DarkYellow.material");
+	}
 
 }
