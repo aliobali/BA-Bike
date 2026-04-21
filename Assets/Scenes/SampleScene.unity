@@ -171,6 +171,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &45422088
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 45422089}
+  m_Layer: 2
+  m_Name: RightGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &45422089
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45422088}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -56.3, y: 67.7, z: 16}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 996525280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &47017756
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,7 +212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 47017760}
   - component: {fileID: 47017759}
-  - component: {fileID: 47017758}
+  - component: {fileID: 47017761}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -189,19 +220,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &47017758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 47017756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 017c5e3933235514c9520e1dace2a4b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Inputs.InputActionManager
-  m_ActionAssets: []
 --- !u!114 &47017759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,9 +234,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.XR.CoreUtils::Unity.XR.CoreUtils.XROrigin
   m_Camera: {fileID: 1874282708}
   m_OriginBaseGameObject: {fileID: 47017756}
-  m_CameraFloorOffsetObject: {fileID: 0}
+  m_CameraFloorOffsetObject: {fileID: 912453314}
   m_RequestedTrackingOriginMode: 1
-  m_CameraYOffset: 2
+  m_CameraYOffset: 0
 --- !u!4 &47017760
 Transform:
   m_ObjectHideFlags: 0
@@ -227,14 +245,42 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 47017756}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.878, z: 50}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 1.8, z: 49.71}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 912453315}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &47017761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47017756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82bc72d2ecc8add47b2fe00d40318500, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Inputs.XRInputModalityManager
+  m_LeftHand: {fileID: 1556092742}
+  m_RightHand: {fileID: 418343547}
+  m_LeftController: {fileID: 0}
+  m_RightController: {fileID: 0}
+  m_TrackedHandModeStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  m_TrackedHandModeEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  m_MotionControllerModeStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  m_MotionControllerModeEnded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &58209629
 GameObject:
   m_ObjectHideFlags: 0
@@ -1936,6 +1982,77 @@ MonoBehaviour:
   BConnectToEVI: {fileID: 767900687}
   SeedEdit: {fileID: 1703956313}
   StreetLightsCheckbox: {fileID: 817302120}
+--- !u!1001 &418343545
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 912453315}
+    m_Modifications:
+    - target: {fileID: 1317669517487522681, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 613690cd962241049a0ec289a6ff835e, type: 2}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3133494152545806682, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+      propertyPath: m_Name
+      value: Right Hand Tracking
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+--- !u!4 &418343546 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2321527512367231968, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+  m_PrefabInstance: {fileID: 418343545}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &418343547 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3133494152545806682, guid: 3f7511fbc40ae7a4b89c3298a3de199d, type: 3}
+  m_PrefabInstance: {fileID: 418343545}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &450618415
 GameObject:
   m_ObjectHideFlags: 0
@@ -3361,11 +3478,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &842086674 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1183246003458300373, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
-  m_PrefabInstance: {fileID: 996525277}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &871427535
 GameObject:
   m_ObjectHideFlags: 0
@@ -3560,10 +3672,104 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1874282705}
-  - {fileID: 2104236524}
-  - {fileID: 1950979949}
+  - {fileID: 935940901}
+  - {fileID: 1556092741}
+  - {fileID: 418343546}
   m_Father: {fileID: 47017760}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &935940900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 935940901}
+  - component: {fileID: 935940902}
+  - component: {fileID: 935940903}
+  - component: {fileID: 935940904}
+  m_Layer: 0
+  m_Name: Hand Visualizer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &935940901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935940900}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -82.91667, y: -1.4999996, z: 0.000012715656}
+  m_LocalScale: {x: 1.6666662, y: 1.6666665, z: 1.6666662}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 912453315}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &935940902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935940900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9813c68d7d6f44282ace8bd2d1fd46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UseOptimizedControls: 0
+  m_MetaQuestLeftHandMesh: {fileID: 1556092742}
+  m_MetaQuestRightHandMesh: {fileID: 418343547}
+  m_AndroidXRLeftHandMesh: {fileID: 919132149155446097, guid: 7eff605df5fc69141bad762b74fb9228, type: 3}
+  m_AndroidXRRightHandMesh: {fileID: 919132149155446097, guid: 49090752ee8bba242ad64a291905ee10, type: 3}
+  m_HandMeshMaterial: {fileID: 2100000, guid: 613690cd962241049a0ec289a6ff835e, type: 2}
+  m_DrawMeshes: 1
+  m_DebugDrawPrefab: {fileID: 6507399986997092475, guid: 254b742d65a15d14b9df756ae77de868, type: 3}
+  m_DebugDrawJoints: 1
+  m_VelocityPrefab: {fileID: 8538602047018081646, guid: 629fd7882ec6bfc499a5fcf20035282b, type: 3}
+  m_VelocityType: 2
+--- !u!114 &935940903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935940900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5903b776721d74786a2e43f00b949a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ProcessorExampleMode: 0
+  m_LeftHandSmoothingFactor: 16
+  m_RightHandSmoothingFactor: 16
+--- !u!114 &935940904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935940900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b81645cef670b4fcaa1342c2723d2e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandGripManager
+  leftHandRoot: {fileID: 1556092741}
+  rightHandRoot: {fileID: 418343546}
+  leftGripPoint: {fileID: 1327350783}
+  rightGripPoint: {fileID: 45422089}
+  gripActivationDistance: 1
+  snapSmoothTime: 0.08
+  gripDistanceOffset: 0
+  fistThreshold: 0.6
+  showDebugInfo: 1
 --- !u!1001 &996525277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3657,7 +3863,13 @@ PrefabInstance:
     - {fileID: 4946984857525507653, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
     - {fileID: 8297088751914340282, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
     - {fileID: 1841807066897279637, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1183246003458300373, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1327350783}
+    - targetCorrespondingSourceObject: {fileID: 1183246003458300373, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 45422089}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 185195118082433056, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
       insertIndex: -1
@@ -3671,6 +3883,11 @@ Transform:
 --- !u!4 &996525279 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1973253822947820471, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
+  m_PrefabInstance: {fileID: 996525277}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &996525280 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1183246003458300373, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
   m_PrefabInstance: {fileID: 996525277}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1058674443
@@ -3748,57 +3965,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1058674443}
   m_CullTransparentMesh: 1
---- !u!1 &1123938817
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1123938819}
-  - component: {fileID: 1123938818}
-  m_Layer: 0
-  m_Name: HandGripManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1123938818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1123938817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b81645cef670b4fcaa1342c2723d2e1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandGripManager
-  leftHandRoot: {fileID: 2104236524}
-  rightHandRoot: {fileID: 1950979949}
-  handlebar: {fileID: 842086674}
-  gripActivationDistance: 0.3
-  snapSmoothTime: 0.1
-  visibleAlpha: 0.9
-  transluentAlpha: 0.4
---- !u!4 &1123938819
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1123938817}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00029, y: 0.60505, z: 50.0252}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1143159618
 GameObject:
   m_ObjectHideFlags: 0
@@ -4209,6 +4375,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1287385123}
   m_CullTransparentMesh: 1
+--- !u!1 &1327350782
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1327350783}
+  m_Layer: 2
+  m_Name: LeftGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1327350783
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1327350782}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 56.3, y: 67.7, z: 16.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 996525280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1459208396
 GameObject:
   m_ObjectHideFlags: 0
@@ -4342,6 +4539,77 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459208396}
   m_CullTransparentMesh: 1
+--- !u!1001 &1556092740
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 912453315}
+    m_Modifications:
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 773853689519989575, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: m_Name
+      value: Left Hand Tracking
+      objectReference: {fileID: 0}
+    - target: {fileID: 1785337192100647894, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 613690cd962241049a0ec289a6ff835e, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+--- !u!4 &1556092741 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 141466980049140221, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+  m_PrefabInstance: {fileID: 1556092740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1556092742 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 773853689519989575, guid: b3ed8a0a703ebd34a9e44ed3d9f1fcf6, type: 3}
+  m_PrefabInstance: {fileID: 1556092740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1592093490
 GameObject:
   m_ObjectHideFlags: 0
@@ -5399,7 +5667,7 @@ Transform:
   m_GameObject: {fileID: 1874282704}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.21, z: -0.17}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5553,7 +5821,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.2
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -6249,67 +6517,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VehicleManager
   playerVehicle: {fileID: 165386475}
   setting: {fileID: 411347882}
---- !u!1 &1950979948
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1950979949}
-  - component: {fileID: 1950979950}
-  m_Layer: 0
-  m_Name: RightHand
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1950979949
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1950979948}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 912453315}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1950979950
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1950979948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5b9cf54c47f40ee9c3eb30ea8eb89b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.XR.Hands::UnityEngine.XR.Hands.XRHandTrackingEvents
-  m_Handedness: 2
-  m_UpdateType: 1
-  m_PoseUpdated:
-    m_PersistentCalls:
-      m_Calls: []
-  m_JointsUpdated:
-    m_PersistentCalls:
-      m_Calls: []
-  m_TrackingAcquired:
-    m_PersistentCalls:
-      m_Calls: []
-  m_TrackingLost:
-    m_PersistentCalls:
-      m_Calls: []
-  m_TrackingChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1996049650
 GameObject:
   m_ObjectHideFlags: 0
@@ -6710,67 +6917,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
---- !u!1 &2104236523
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2104236524}
-  - component: {fileID: 2104236525}
-  m_Layer: 0
-  m_Name: LeftHand
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2104236524
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2104236523}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 912453315}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2104236525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2104236523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5b9cf54c47f40ee9c3eb30ea8eb89b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.XR.Hands::UnityEngine.XR.Hands.XRHandTrackingEvents
-  m_Handedness: 1
-  m_UpdateType: 1
-  m_PoseUpdated:
-    m_PersistentCalls:
-      m_Calls: []
-  m_JointsUpdated:
-    m_PersistentCalls:
-      m_Calls: []
-  m_TrackingAcquired:
-    m_PersistentCalls:
-      m_Calls: []
-  m_TrackingLost:
-    m_PersistentCalls:
-      m_Calls: []
-  m_TrackingChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &2117732540
 GameObject:
   m_ObjectHideFlags: 0
@@ -6875,4 +7021,3 @@ SceneRoots:
   - {fileID: 47017760}
   - {fileID: 450618417}
   - {fileID: 811210893}
-  - {fileID: 1123938819}

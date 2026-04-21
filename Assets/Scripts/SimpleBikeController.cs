@@ -123,15 +123,15 @@ public class SimpleBikeController : MonoBehaviour
         Vector3 newPosition = transform.position + transform.forward * currentSpeed * Time.deltaTime;
         transform.position = newPosition;
 
-        // Move AND rotate XR Origin with the bike
+        // Move XR Origin with the bike (position only - no rotation)
         if (xrOrigin != null)
         {
-            // Update position
+            // Update position: XR Origin moves with bike platform
             Vector3 deltaPosition = transform.position - lastPosition;
             xrOrigin.position += deltaPosition;
             
-            // Update rotation to match bike yaw (keep XR Origin facing bike's forward)
-            xrOrigin.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            // Camera stays centered on seat and doesn't rotate with steering
+            // xrOrigin.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
         }
         lastPosition = transform.position;
 
