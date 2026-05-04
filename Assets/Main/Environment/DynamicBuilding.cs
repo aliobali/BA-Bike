@@ -56,6 +56,7 @@ public class DynamicBuilding : MonoBehaviour
 		for (int i = 0; i < shapePoints.Length; i++)
 		{
 			shapePoints[i] -= buildingCenter;
+			shapePoints[i] = shapePoints[i] * 0.98f;
 		}
 
 		// polygon not a fill and includes lines
@@ -144,14 +145,14 @@ public class DynamicBuilding : MonoBehaviour
 
 							Renderer renderer = windowWall.GetComponent<Renderer>();
 							Material[] mats = renderer.materials;
-							for (var l = 0; l < mats.Length; l++)
-							{
-								if (mats[l].name.Contains("Wall"))
-								{
-									mats[l] = pMaterial;
-									renderer.materials = mats;
-								}
-							}
+							// for (var l = 0; l < mats.Length; l++)
+							// {
+							// 	if (mats[l].name.Contains("Wall"))
+							// 	{
+							// 		mats[l] = pMaterial;
+							// 		renderer.materials = mats;
+							// 	}
+							// }
 						}
 					}
 				}
@@ -188,7 +189,7 @@ public class DynamicBuilding : MonoBehaviour
 		float[] tangents;
 		ImportHelper.CalculateNormals(vertices, triangles, uvs, out normals, out tangents);
 		Mesh mesh = new Mesh();
-		ImportHelper.AddMesh(gameObject, mesh, vertices, uvs, triangles, null, pMaterial);
+		ImportHelper.AddMesh(gameObject, mesh, vertices, uvs, triangles, null, null);
 	}
 
 	private void BuildWall(Vector3[] shape, float Height, ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uvs)
