@@ -28,7 +28,7 @@ public class XRHandArmVisualizer : MonoBehaviour
     public float armRadius = 0.02f;
     
     [Tooltip("Create visual mesh for arms")]
-    public bool createArmMeshes = true;
+    public bool createArmMeshes = false;
     
     [Tooltip("Material for arm rendering")]
     public Material armMaterial;
@@ -243,34 +243,34 @@ public class XRHandArmVisualizer : MonoBehaviour
 
     private Vector3 CalculateElbowPosition(Vector3 shoulderPos, Vector3 handPos, float upperLen, float forearmLen)
     {
-        // Simple IK: find point where upper arm + forearm segments reach the hand
+        // Simple elbow positioning: just place it between shoulder and hand
         Vector3 toHand = handPos - shoulderPos;
         float distToHand = toHand.magnitude;
+        
+        // Clamp distance to valid arm reach
+        float maxReach = upperLen + forearmLen;
+        if (distToHand > maxReach)
+        {
+            distToHand = maxReach;
+            handPos = shoulderPos + toHand.normalized * maxReach;
+        }
         
         if (distToHand < 0.01f)
             return shoulderPos + Vector3.forward * upperLen;
         
-        // Calculate angle using law of cosines
-        float a = upperLen;
-        float b = forearmLen;
-        float c = distToHand;
+        // Place elbow at roughly middle of upper arm along the line to hand
+        // This is simplified IK - just positions elbow reasonably
+        Vector3 dirToHand = toHand.normalized;
+        Vector3 elbowPos = shoulderPos + dirToHand * upperLen;
         
-        // Clamp to valid triangle
-        c = Mathf.Clamp(c, Mathf.Abs(a - b), a + b);
-        
-        float cosA = (a * a + c * c - b * b) / (2f * a * c);
-        cosA = Mathf.Clamp01(cosA);
-        float angleAtShoulder = Mathf.Acos(cosA);
-        
-        // Position elbow along the line to hand, bent by the angle
-        Vector3 direction = toHand.normalized;
-        Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
-        if (perpendicular.sqrMagnitude < 0.01f)
-            perpendicular = Vector3.Cross(direction, Vector3.right).normalized;
-        
-        // Elbow position: shoulder + elbow arm length in bent direction
-        Vector3 elbowPos = shoulderPos + direction * (a * Mathf.Cos(angleAtShoulder));
-        elbowPos += perpendicular * (a * Mathf.Sin(angleAtShoulder));
+        // If elbow position is too far from hand, adjust it
+        float distElbowToHand = Vector3.Distance(elbowPos, handPos);
+        if (distElbowToHand > forearmLen * 1.5f)
+        {
+            // Pull elbow closer to hand
+            Vector3 midpoint = (shoulderPos + handPos) * 0.5f;
+            elbowPos = Vector3.Lerp(elbowPos, midpoint, 0.5f);
+        }
         
         return elbowPos;
     }

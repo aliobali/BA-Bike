@@ -70,14 +70,14 @@ namespace Env3d.SumoImporter
             MeshFilter meshFilter = mainBody.GetComponent<MeshFilter>(); // Mesh Holder
             meshFilter.mesh = meshBody; 
             MeshRenderer meshRender = mainBody.GetComponent<MeshRenderer>(); // Texture Renderer
-			Shader shader = Shader.Find("Unlit/Texture");
+			Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
 
 			if(material == null)
 			{
 				if(shader == null)
 				{
 					Debug.Log("Shader not found! Using default material instead.");
-					meshRender.material = new Material(Shader.Find("Standard"));
+					meshRender.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
 				}
 				else
 				{

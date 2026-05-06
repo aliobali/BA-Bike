@@ -975,8 +975,8 @@ MonoBehaviour:
   handlebar: {fileID: 2122112720}
   frontWheel: {fileID: 996525279}
   rearWheel: {fileID: 996525278}
-  rotationSpeed: 80
-  maxRotationRate: 60
+  rotationSpeed: 50
+  maxRotationRate: 40
   maxHandlebarAngle: 45
   accelerationRate: 2
   decelerationRate: 8
@@ -985,7 +985,7 @@ MonoBehaviour:
   simulateStartupAcceleration: 1
   idleThreshold: 0.5
   activeThreshold: 1
-  rotationSmoothTime: 0.1
+  rotationSmoothTime: 0.3
   enableWheelRotation: 1
   wheelRadius: 0.34
   wheelSpinMultiplier: 0.5
@@ -996,9 +996,14 @@ MonoBehaviour:
   autoAdjustHeightToGround: 0
   groundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
   groundDetectionDistance: 5
   desiredEyeHeight: 1.6
+--- !u!4 &165386478 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 653725680723774863, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
+  m_PrefabInstance: {fileID: 996525277}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &172900085
 GameObject:
   m_ObjectHideFlags: 0
@@ -3702,6 +3707,7 @@ GameObject:
   - component: {fileID: 935940902}
   - component: {fileID: 935940903}
   - component: {fileID: 935940904}
+  - component: {fileID: 935940905}
   m_Layer: 0
   m_Name: Hand Visualizer
   m_TagString: Untagged
@@ -3769,11 +3775,31 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 935940900}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b81645cef670b4fcaa1342c2723d2e1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HandGripManager
+--- !u!114 &935940905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935940900}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70fa3890944f847d28d0af9fdb3e2440, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRHandArmVisualizer
+  leftHandRoot: {fileID: 1556092741}
+  rightHandRoot: {fileID: 418343546}
+  shoulderOffsetY: 0.2
+  upperArmLength: 0.3
+  forearmLength: 0.25
+  armRadius: 0.02
+  createArmMeshes: 1
+  armMaterial: {fileID: 2100000, guid: 912fc1703b666f9469f6461996bec1be, type: 2}
 --- !u!1001 &996525277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3894,6 +3920,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1183246003458300373, guid: ea714c75776e0674880298b9e1c70fe8, type: 3}
   m_PrefabInstance: {fileID: 996525277}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &997856243
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 997856245}
+  - component: {fileID: 997856244}
+  m_Layer: 0
+  m_Name: OriginShiftingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &997856244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997856243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1adf70b73aa19464e954e8a63b7a540a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OriginShiftingManager
+  enableShifting: 1
+  shiftThreshold: 100
+  playerBike: {fileID: 165386478}
+  environmentRoot: {fileID: 2033446223}
+--- !u!4 &997856245
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997856243}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00024, y: 0.0545, z: 50.02071}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1058674443
 GameObject:
   m_ObjectHideFlags: 0
@@ -5793,7 +5867,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1874282704}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1874282708
 Camera:
   m_ObjectHideFlags: 0
@@ -5825,8 +5899,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
-  far clip plane: 1000
+  near clip plane: 0.2
+  far clip plane: 300
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -7025,3 +7099,4 @@ SceneRoots:
   - {fileID: 47017760}
   - {fileID: 450618417}
   - {fileID: 811210893}
+  - {fileID: 997856245}

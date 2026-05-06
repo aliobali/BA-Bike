@@ -129,7 +129,7 @@ QualitySettings:
     globalTextureMipmapLimit: 0
     textureMipmapLimitSettings: []
     anisotropicTextures: 0
-    antiAliasing: 0
+    antiAliasing: 4
     softParticles: 0
     softVegetation: 0
     realtimeReflectionProbes: 0
@@ -140,8 +140,8 @@ QualitySettings:
     realtimeGICPUUsage: 25
     adaptiveVsyncExtraA: 0
     adaptiveVsyncExtraB: 0
-    lodBias: 0.5
-    meshLodThreshold: 1
+    lodBias: 1.5
+    meshLodThreshold: 0.5
     maximumLODLevel: 0
     enableLODCrossFade: 1
     streamingMipmapsActive: 0

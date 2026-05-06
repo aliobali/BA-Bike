@@ -27,11 +27,11 @@ public class SimpleBikeController : MonoBehaviour
 
     [Header("Movement Settings")]
     [Tooltip("How fast the bike rotates based on steering input")]
-    public float rotationSpeed = 30f;
+    public float rotationSpeed = 40f;
 
     [Tooltip("Maximum rotation rate per second (degrees) to prevent VR sickness")]
     [Range(10f, 120f)]
-    public float maxRotationRate = 60f;
+    public float maxRotationRate = 35f;
 
     [Tooltip("Maximum handlebar rotation angle in degrees")]
     public float maxHandlebarAngle = 45f;
@@ -64,7 +64,7 @@ public class SimpleBikeController : MonoBehaviour
     public float activeThreshold = 1.0f;
 
     [Tooltip("Smooth out rotation changes (0 = instant, higher = more lag)")]
-    public float rotationSmoothTime = 0.2f;
+    public float rotationSmoothTime = 0.4f;
 
     [Header("Wheel Settings")]
     [Tooltip("Enable wheel rotation animation")]
@@ -267,6 +267,14 @@ public class SimpleBikeController : MonoBehaviour
         // Move forward based on speed
         Vector3 newPosition = transform.position + transform.forward * currentSpeed * Time.deltaTime;
         transform.position = newPosition;
+
+        // ========== OPTIONAL: Origin-Shifting for VR Jitter Fix ==========
+        // This line enables the OriginShiftingManager to reduce distant object jitter
+        // TO DISABLE: Delete this line or comment it out (original code is unaffected)
+        // TO REVERT: Just remove this line - everything reverts to normal
+        OriginShiftingManager originShifter = FindFirstObjectByType<OriginShiftingManager>();
+        if (originShifter != null) originShifter.OnPlayerMoved();
+        // ===================================================================
 
         // Lock XR Origin to bike saddle (maintains fixed offset even when steering)
         if (xrOrigin != null)
