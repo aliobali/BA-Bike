@@ -28,6 +28,17 @@ public class BikeUdpReceiver : MonoBehaviour
     [Range(0f, 0.2f)]
     public float steeringDeadzone = 0.02f;
 
+    [Tooltip("Speed smoothing factor - lower = smoother but more lag (0.1 = very smooth, 0.5 = responsive)")]
+    [Range(0f, 1f)]
+    public float speedSmoothingFactor = 0.2f;
+
+    [Header("Speed Sensor Calibration")]
+    [Tooltip("Number of IR markers on the physical wheel")]
+    public int ticksPerRotation = 18;
+
+    [Tooltip("Diameter of the wheel the IR sensor reads (meters)")]
+    public float sensorWheelDiameter = 0.6f;
+
     // UDP listeners
     private UdpClient steeringClient;
     private UdpClient speedClient;
@@ -39,7 +50,7 @@ public class BikeUdpReceiver : MonoBehaviour
     private volatile float latestSteeringNormalized = 0f;
 
     // Public properties for the input adapter
-    public float Speed => latestSpeed;
+    public float Speed => latestSpeed * (Mathf.PI * sensorWheelDiameter) / ticksPerRotation;
     public float SteeringNormalized => latestSteeringNormalized;
     public float SteeringNormalizedDeadzoned => ApplyDeadzone(latestSteeringNormalized, steeringDeadzone);
     public float SteeringAngleDegrees => Mathf.Asin(Mathf.Clamp(SteeringNormalizedDeadzoned, -1f, 1f)) * Mathf.Rad2Deg;
@@ -131,7 +142,7 @@ public class BikeUdpReceiver : MonoBehaviour
         {
             if (IsSpeedLabel(label))
             {
-                latestSpeed = value;
+                latestSpeed = Mathf.Lerp(latestSpeed, value, speedSmoothingFactor);
                 if (logPackets) Debug.Log($"[UDP Speed] {value:F2} m/s");
                 return;
             }
@@ -140,7 +151,7 @@ public class BikeUdpReceiver : MonoBehaviour
         // Fall back to plain number
         if (float.TryParse(msg, NumberStyles.Float, CultureInfo.InvariantCulture, out var plainValue))
         {
-            latestSpeed = plainValue;
+            latestSpeed = Mathf.Lerp(latestSpeed, plainValue, speedSmoothingFactor);
             if (logPackets) Debug.Log($"[UDP Speed] {plainValue:F2} m/s");
         }
     }

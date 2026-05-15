@@ -73,7 +73,7 @@ public class SimpleBikeController : MonoBehaviour
     [Header("Resistance Settings")]
     [Tooltip("Quadratic air resistance coefficient - higher values plateau speed sooner. Start at 0.02 and tune up if bike gets too fast")]
     [Range(0.0f, 0.1f)]
-    public float resistanceCoefficient = 0.02f;
+    public float resistanceCoefficient = 0.01f;
 
     [Header("Wheel Settings")]
     [Tooltip("Enable wheel rotation animation")]
@@ -90,7 +90,7 @@ public class SimpleBikeController : MonoBehaviour
     public bool allowSteeringWithoutMovement = false;
 
     [Tooltip("Scale incoming speed (m/s) to tame motion")]
-    public float speedScale = 0.5f;
+    public float speedScale = 1.0f;
 
     [Tooltip("Absolute cap on movement speed (m/s)")]
     public float maxSpeed = 5f;
@@ -224,6 +224,9 @@ public class SimpleBikeController : MonoBehaviour
         // Get sensor data
         float rawSpeed = udpReceiver.Speed;
         float steeringNormalized = udpReceiver.SteeringNormalizedDeadzoned;
+
+        // DEBUG: Verify TPS to m/s conversion
+        Debug.Log($"[SPEED] TPS: {rawSpeed / (Mathf.PI * 0.6f) * 18f:F2} → m/s: {rawSpeed:F2}");
 
         // --- SPEED WITH AIR RESISTANCE ---
         float targetSpeed = rawSpeed * speedScale;
