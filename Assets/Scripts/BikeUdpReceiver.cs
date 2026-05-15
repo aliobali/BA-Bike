@@ -46,10 +46,12 @@ public class BikeUdpReceiver : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("[BikeUdpReceiver] Starting UDP listener...");
         try
         {
             StartListener(ref steeringClient, ref steeringEndpoint, steeringUdpPort, OnSteeringReceive, "steering");
             StartListener(ref speedClient, ref speedEndpoint, speedUdpPort, OnSpeedReceive, "speed");
+            Debug.Log("[BikeUdpReceiver] UDP listeners started successfully");
         }
         catch (Exception ex)
         {
