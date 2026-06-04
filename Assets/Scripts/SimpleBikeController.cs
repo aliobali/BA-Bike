@@ -1,8 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Simple non-physics bike controller that moves based on UDP sensor data.
-/// Moves the bike transform directly without using WheelColliders or Rigidbody physics.
+/// Simple bike controller that moves based on UDP sensor data.
 /// </summary>
 public class SimpleBikeController : MonoBehaviour
 {
@@ -12,6 +11,9 @@ public class SimpleBikeController : MonoBehaviour
 
     [Tooltip("XR Origin to move with the bike (position only, not rotation)")]
     public Transform xrOrigin;
+
+   [Tooltip("Camera Offset child inside XR Origin - drag the 'Camera Offset' child object here")]
+    public Transform cameraOffset;
 
     [Tooltip("Bike visual mesh/model to rotate for steering")]
     public Transform bikeVisuals;
@@ -26,9 +28,6 @@ public class SimpleBikeController : MonoBehaviour
     public Transform rearWheel;
 
     [Header("Movement Settings")]
-    // [Tooltip("How fast the bike rotates based on steering input")]
-    // public float rotationSpeed = 40f;  // UNUSED: replaced by radius-based steering formula
-
     [Tooltip("Maximum rotation rate per second (degrees) to prevent VR sickness")]
     [Range(10f, 120f)]
     public float maxRotationRate = 35f;
@@ -56,17 +55,6 @@ public class SimpleBikeController : MonoBehaviour
     [Range(0.1f, 5f)]
     public float brakingThreshold = 0.5f;
 
-    // [Tooltip("Simulate acceleration from 0 when speed jumps from idle (prevents instant speed jump at startup)")]
-    // public bool simulateStartupAcceleration = true;  // UNUSED: wrapped in if(false &&...)
-
-    // [Tooltip("Speed threshold to detect 'idle' state (m/s)")]
-    // [Range(0f, 2f)]
-    // public float idleThreshold = 0.5f;  // UNUSED: only used in dead simulateStartupAcceleration block
-
-    // [Tooltip("Speed threshold to detect 'active' pedaling (m/s)")]
-    // [Range(0.5f, 5f)]
-    // public float activeThreshold = 1.0f;  // UNUSED: only used in dead simulateStartupAcceleration block
-
     [Tooltip("Smooth out rotation changes (0 = instant, higher = more lag)")]
     public float rotationSmoothTime = 0.15f;
 
@@ -93,21 +81,11 @@ public class SimpleBikeController : MonoBehaviour
     public float speedScale = 1.0f;
 
     [Tooltip("Absolute cap on movement speed (m/s)")]
-    public float maxSpeed = 5f;
-    
-    // [Tooltip("Automatically sync bike rotation with XR Origin when device recenters")]
-    // public bool autoSyncWithXRRecenter = true;  // UNUSED: recenter logic not currently used
+    public float maxSpeed = 10f;
 
     [Header("Ground Detection")]
-    // [Tooltip("Auto-adjust XR Origin height based on ground at startup")]
-    // public bool autoAdjustHeightToGround = true;  // UNUSED: method body is fully commented out
-    // [Tooltip("Layer mask for ground detection")]
-    // public LayerMask groundLayer = -1;  // UNUSED: only used in commented out raycast
-    // [Tooltip("Distance to raycast down for ground")]
-    // public float groundDetectionDistance = 5f;  // UNUSED: only used in commented out raycast
-    
     [Tooltip("Desired eye height above ground")]
-    public float desiredEyeHeight = 1.2f;
+    public float desiredEyeHeight = 0f;
     private float currentSpeed = 0f;
     private float currentRotation = 0f;
     private float wheelRotation = 0f;
@@ -119,9 +97,6 @@ public class SimpleBikeController : MonoBehaviour
     private Quaternion initialBikeRotation;
     private Vector3 initialXRPosition;
     private Quaternion initialXRRotation;
-    
-    // Track XR rotation to detect recenter
-    // private float lastXRYaw = 0f;  // UNUSED: only used in commented out recenter detection
     
     // Store the offset between bike and camera (for saddle locking)
     private Vector3 xrOffsetFromBike;
@@ -154,15 +129,9 @@ public class SimpleBikeController : MonoBehaviour
             rearWheelInitialEuler = rearWheel.localEulerAngles;
         
         // lastPosition = transform.position;  // UNUSED
-
-        // Auto-adjust XR Origin height based on ground at startup
-        // if (autoAdjustHeightToGround && xrOrigin != null)
-        // {
-        //     AdjustXRHeightToGround();
-        // }
         
         // Use desired eye height directly
-        if (xrOrigin != null)
+       if (xrOrigin != null)
         {
             xrOrigin.position = new Vector3(xrOrigin.position.x, desiredEyeHeight, xrOrigin.position.z);
         }
@@ -177,47 +146,20 @@ public class SimpleBikeController : MonoBehaviour
         if (xrOrigin != null)
         {
             xrOffsetFromBike = initialXRPosition - initialBikePosition;
-            // lastXRYaw = xrOrigin.transform.eulerAngles.y;  // UNUSED: only used in commented out recenter detection
         }
-    }
 
-    private void AdjustXRHeightToGround()
-    {
-        if (xrOrigin == null) return;
-
-        // Raycast down from XR Origin to find ground
-        // RaycastHit hit;
-        // if (Physics.Raycast(xrOrigin.position, Vector3.down, out hit, groundDetectionDistance, groundLayer))
-        // {
-        //     // Ground found - adjust XR Origin height so eyes are at desired height above ground
-        //     float groundY = hit.point.y;
-        //     float targetXROriginY = groundY + desiredEyeHeight;
-        //     
-        //     xrOrigin.position = new Vector3(xrOrigin.position.x, targetXROriginY, xrOrigin.position.z);
-        //     Debug.Log($"[SimpleBikeController] Ground at {groundY:F2}m. Adjusted XR Origin to Y={targetXROriginY:F2}m for {desiredEyeHeight}m eye height.");
-        // }
-        // else
-        // {
-        //     Debug.LogWarning($"[SimpleBikeController] No ground detected within {groundDetectionDistance}m. Using current height.");
-        // }
+        // Use cameraOffset if assigned, otherwise fall back to xrOrigin
+        Transform movementTarget = cameraOffset != null ? cameraOffset : xrOrigin;
+        if (movementTarget != null)
+        {
+            initialXRPosition = movementTarget.position;
+            initialXRRotation = movementTarget.rotation;
+            xrOffsetFromBike = movementTarget.position - initialBikePosition;
+        }
     }
 
     void Update()
     {
-        // Check if XR device has been recentered (sudden yaw change indicates recenter)
-        // if (autoSyncWithXRRecenter && xrOrigin != null)  // UNUSED: autoSyncWithXRRecenter not used
-        // {
-        //     float currentXRYaw = xrOrigin.transform.eulerAngles.y;
-        //     
-        //     // Detect recenter: significant yaw change that looks like a reset (not gradual turning)
-        //     float yawDelta = Mathf.Abs(Mathf.DeltaAngle(lastXRYaw, currentXRYaw));
-        //     if (yawDelta > 30f && currentXRYaw < 5f)  // Large jump to near 0 = recenter detected
-        //     {
-        //         Debug.Log($"[SimpleBikeController] Detected device recenter. Syncing bike...");
-        //         RecenterBikeAndCamera();
-        //     }
-        //     lastXRYaw = currentXRYaw;
-        // }
         
         if (udpReceiver == null) return;
 
@@ -226,9 +168,9 @@ public class SimpleBikeController : MonoBehaviour
         float steeringNormalized = udpReceiver.SteeringNormalizedDeadzoned;
 
         // DEBUG: Verify TPS to m/s conversion
-        Debug.Log($"[SPEED] TPS: {rawSpeed / (Mathf.PI * 0.6f) * 18f:F2} → m/s: {rawSpeed:F2}");
+        //Debug.Log($"[SPEED] TPS: {rawSpeed / (Mathf.PI * 0.6f) * 18f:F2} → m/s: {rawSpeed:F2}");
 
-        // --- SPEED WITH AIR RESISTANCE ---
+        // Speed with air resistance
         float targetSpeed = rawSpeed * speedScale;
         
         // Apply air resistance (drag increases with speed squared)
@@ -268,7 +210,7 @@ public class SimpleBikeController : MonoBehaviour
         
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelRate * Time.deltaTime);
 
-        // --- STEERING WITH RADIUS-BASED PHYSICS ---
+        // Steering with radius based physics
         float steeringAngleRad = steeringNormalized * (maxHandlebarAngle * Mathf.Deg2Rad);
         
         float turningRadius = float.MaxValue;
@@ -304,39 +246,14 @@ public class SimpleBikeController : MonoBehaviour
         Vector3 newPosition = transform.position + transform.forward * currentSpeed * Time.deltaTime;
         transform.position = newPosition;
 
-        // ========== OPTIONAL: Origin-Shifting for VR Jitter Fix ==========
-        // This line enables the OriginShiftingManager to reduce distant object jitter
-        // TO DISABLE: Delete this line or comment it out (original code is unaffected)
-        // TO REVERT: Just remove this line - everything reverts to normal
-        // OriginShiftingManager originShifter = FindFirstObjectByType<OriginShiftingManager>();  // UNUSED
-        // if (originShifter != null) originShifter.OnPlayerMoved();
-        // ===================================================================
-
-        // Lock XR Origin to bike saddle (maintains fixed offset even when steering)
-        if (xrOrigin != null)
+       // Move Camera Offset instead of XR Origin root - keeps hand tracking aligned
+        Transform movementTarget = cameraOffset != null ? cameraOffset : xrOrigin;
+        if (movementTarget != null)
         {
-            // Calculate rotated offset based on bike's current rotation
             Vector3 rotatedOffset = transform.rotation * xrOffsetFromBike;
-            
-            // Position camera at bike position + rotated offset (locked to saddle)
-            xrOrigin.position = transform.position + rotatedOffset;
-            
-            // Rotate camera with bike (Y-axis only, keeps head level)
-            xrOrigin.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            movementTarget.position = transform.position + rotatedOffset;
+            movementTarget.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
         }
-        
-        // COMMENTED OUT - Old version that drifts when steering
-        // if (xrOrigin != null)
-        // {
-        //     // Update position
-        //     Vector3 deltaPosition = transform.position - lastPosition;
-        //     xrOrigin.position += deltaPosition;
-        //     
-        //     // Update rotation to match bike yaw (keep XR Origin facing bike's forward)
-        //     xrOrigin.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
-        // }
-        
-        // lastPosition = transform.position;  // UNUSED
 
         // Rotate bike visuals for steering effect (optional, keeps rider stable)
         if (bikeVisuals != null)
@@ -411,13 +328,13 @@ public class SimpleBikeController : MonoBehaviour
         transform.position = initialBikePosition;
         transform.rotation = initialBikeRotation;
         
-        // Reset XR Origin (camera)
-        if (xrOrigin != null)
+        Transform movementTarget = cameraOffset != null ? cameraOffset : xrOrigin;
+        if (movementTarget != null)
         {
-            xrOrigin.position = initialXRPosition;
-            xrOrigin.rotation = initialXRRotation;
+            movementTarget.position = initialXRPosition;
+            movementTarget.rotation = initialXRRotation;
         }
-        
+                
         // Reset movement state
         // lastPosition = initialBikePosition;  // UNUSED
         currentSpeed = 0f;
