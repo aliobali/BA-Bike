@@ -15,6 +15,8 @@ This repository contains the Unity VR prototype and the supporting test tool for
 | Path | Contents |
 |---|---|
 | `unity/` | Unity project (Unity 6000.2.6f2) |
+| `unity/Assets/Scripts/` | Unity scripts for the UDP receiver and bike controller |
+| `unity/Assets/Resources/Environment/Vehicles/` | Vehicle prefabs and mesh assets used in the scene |
 | `tools/` | UDP test script for simulating the Unity-facing streams |
 | `firmware/` | ESP32 bicycle-interface source and firmware setup notes |
 
@@ -78,6 +80,7 @@ To start the VR setup:
 7. Start Play mode in Unity.
 8. If the position is slightly off, move the bike or the physical setup a little, but avoid recentering unless needed because recentering can break hand tracking.
 9. If the alignment is too far off, close SteamVR, adjust the boundaries in Vive Hub settings, and repeat the setup.
+10. Before pressing Play, make sure the required GameObjects and Inspector references are assigned in the Unity scene. Bike should have the SimpleBikeController script and Network/BikeUdpReceiver should have BikeUdpReceiver.
 
 ## Network and Packet Checks
 
@@ -106,6 +109,7 @@ This repository focuses on the bicycle-input pipeline and the Unity VR prototype
 
 - `tools/test_bike_udp.py` is the helper script for sending test UDP traffic into Unity.
 - The firmware notes and exact ESP32 configuration live in [firmware/README.md](firmware/README.md).
+- `unity/Scenes/PanelScene.unity` is the Unity scene version used as the expert-panel reference.
 
 ## Citation
 
