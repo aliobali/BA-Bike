@@ -4,12 +4,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
-
 /// <summary>
 /// Receives speed and steering angle data via UDP from the stationary bike's sensors.
 /// Listens on two separate UDP ports:
 /// - Port 5005: Steering angle data
-/// - Port 4022: Speed data (m/s)
+/// - Port 4022: Speed data (TPS)
 /// </summary>
 public class BikeUdpReceiver : MonoBehaviour
 {
@@ -17,9 +16,9 @@ public class BikeUdpReceiver : MonoBehaviour
     [Tooltip("UDP port to listen on for steering data (angle in degrees, normalized [-1,1])")]
     public int steeringUdpPort = 5005;
 
-    [Tooltip("UDP port to listen on for speed data (m/s)")]
+    [Tooltip("UDP port to listen on for speed data TPS")]
     public int speedUdpPort = 4022;
-
+    
     [Tooltip("Show debug logs for received packets")]
     public bool logPackets = false;
 
@@ -53,7 +52,6 @@ public class BikeUdpReceiver : MonoBehaviour
     public float Speed => latestSpeed * (Mathf.PI * sensorWheelDiameter) / ticksPerRotation;
     public float SteeringNormalized => latestSteeringNormalized;
     public float SteeringNormalizedDeadzoned => ApplyDeadzone(latestSteeringNormalized, steeringDeadzone);
-    public float SteeringAngleDegrees => Mathf.Asin(Mathf.Clamp(SteeringNormalizedDeadzoned, -1f, 1f)) * Mathf.Rad2Deg;
 
     void Start()
     {
@@ -137,13 +135,12 @@ public class BikeUdpReceiver : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(msg)) return;
 
-        // Try labeled format first: "speed:3.5" or "spd:2.0"
         if (TryParseLabeledFloat(msg, out var label, out var value))
         {
             if (IsSpeedLabel(label))
             {
                 latestSpeed = Mathf.Lerp(latestSpeed, value, speedSmoothingFactor);
-                if (logPackets) Debug.Log($"[UDP Speed] {value:F2} m/s");
+                if (logPackets) Debug.Log($"[TPS] {value:F2} ");
                 return;
             }
         }
@@ -152,7 +149,7 @@ public class BikeUdpReceiver : MonoBehaviour
         if (float.TryParse(msg, NumberStyles.Float, CultureInfo.InvariantCulture, out var plainValue))
         {
             latestSpeed = Mathf.Lerp(latestSpeed, plainValue, speedSmoothingFactor);
-            if (logPackets) Debug.Log($"[UDP Speed] {plainValue:F2} m/s");
+            if (logPackets) Debug.Log($"[TPS] {plainValue:F2} ");
         }
     }
 
@@ -169,7 +166,7 @@ public class BikeUdpReceiver : MonoBehaviour
 
     private static bool IsSpeedLabel(string label)
     {
-        return label == "speed" || label == "spd" || label == "velocity";
+        return label == "speed" || label == "spd" || label == "ticks" || label == "tps";
     }
 
     private static bool IsSteeringLabel(string label)
