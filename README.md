@@ -50,7 +50,7 @@ Software:
 
 ## Quickstart
 
-1. Open the Unity project in `unity/` and load the main scene.
+1. Open the Unity project in `unity/` and load the main scene `PanelScene.unity`.
 2. Connect the ESP32 to power before starting the live system.
 3. Put the phone in the handlebar holder.
 4. Make sure the steering app can join the same Wi-Fi network as the ESP32 and the PC.
@@ -67,7 +67,7 @@ Before starting the headset flow:
 
 1. Connect the ESP32 to a power source.
 2. Put the phone in the holder on the handlebar.
-3. Obtain the Wi-Fi and phone password from Esteli Garcia if you do not already have it.
+3. Obtain the Wi-Fi and phone password from HCI supervisor (currently Esteli Garcia) if you do not already have it.
 
 To start the VR setup:
 
@@ -109,7 +109,7 @@ This repository focuses on the bicycle-input pipeline and the Unity VR prototype
 
 - `tools/test_bike_udp.py` is the helper script for sending test UDP traffic into Unity.
 - The firmware notes and exact ESP32 configuration live in [firmware/README.md](firmware/README.md).
-- `unity/Scenes/PanelScene.unity` is the Unity scene version used as the expert-panel reference.
+- `unity/Assets/Scenes/PanelScene.unity` is the Unity scene version used as the expert-panel reference.
 
 ## Citation
 

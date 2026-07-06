@@ -20,7 +20,7 @@ with the updated thesis version from this repository:
 
 1. Clone the upstream VCE repository from TKN.
 2. Copy `firmware/adc2udp.c` into the upstream `bike-interface/esp32/adc2udp/main/` directory.
-3. Set up the ESP-ID 5.2 environment for the ESP32 (https://github.com/espressif/esp-idf). `git clone -b v5.2 --recursive https://github.com/espressif/esp-idf.git`
+3. Set up the ESP-IDF 5.2 environment for the ESP32 (https://github.com/espressif/esp-idf). `git clone -b v5.2 --recursive https://github.com/espressif/esp-idf.git`
 4. Open the configuration menu with `idf.py menuconfig`.
 5. Set the GPIO pins, Wi-Fi credentials, UDP ports, and target IP address.
 6. Flash the ESP32 with `idf.py flash monitor` or `idf.py flash` followed by `idf.py monitor`.
@@ -36,5 +36,9 @@ Use that guide for the full ESP-IDF installation and permission setup details.
 
 ## Notes
 
-- The thesis version of the firmware is in [adc2udp.c].
+- The thesis version of the firmware is in adc2udp.c.
 - The repository root README provides the project-level overview and VR setup steps.
+
+## License
+
+The adc2udp.c script is licensed under the GNU General Public License v3.0, inherited from the upstream TKN Virtual Cycling Environment.

@@ -35,16 +35,6 @@ mono_crash.*
 **/Managed/
 **/tempburstlibs/
 
-# Large texture and asset files (download separately)
-*.tif
-*.tiff
-*.png
-*.jpg
-*.jpeg
-*.exr
-*.psb
-*.psd
-
 # IDE
 .vscode/
 .idea/
@@ -85,19 +75,14 @@ __pycache__/
 # Markdown documentation files
 *.md
 
-# Unity asset files (binary, generated)
-*.asset
-*.prefab
-*.brush
-*.meta
-*.mat
-
 # External asset packs (download separately from asset store)
-/Assets/ALP_Assets/
-/Assets/RayznGames/
-/Assets/TextMesh Pro/
-/Assets/Samples/
-/Assets/TutorialInfo/
+unity/Assets/ALP_Assets/
+unity/Assets/RayznGames/
+unity/Assets/TextMesh Pro/
+unity/Assets/Samples/
+unity/Assets/TutorialInfo/
+
+Assets/ALP_Assets/
 
 # Large binary downloads and packages
 *.unitypackage

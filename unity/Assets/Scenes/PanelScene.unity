@@ -326,15 +326,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 398572726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4851c20ddb36bb48b6f8d4f79032198, type: 3}
+  m_Script: {fileID: 11500000, guid: 83c38e1527eea42b79a65ed817d23739, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimpleBikeController
-  udpReceiver: {fileID: 0}
+  udpReceiver: {fileID: 2117732543}
   xrOrigin: {fileID: 47017760}
   cameraOffset: {fileID: 912453315}
   handlebar: {fileID: 398572729}
   frontWheel: {fileID: 398572728}
-  rearWheel: {fileID: 0}
   handlebarVisualSign: -1
   maxRotationRate: 35
   maxHandlebarAngle: 45
@@ -342,13 +341,13 @@ MonoBehaviour:
   accelerationRate: 2
   decelerationRate: 8
   activeBrakeRate: 30
-  brakingThreshold: 1.5
+  brakingThreshold: 0.5
   rotationSmoothTime: 0.15
-  resistanceCoefficient: 0.01
+  resistCoefficient: 0.01
   enableWheelRotation: 1
   wheelRadius: 0.34
   wheelSpinMultiplier: 0.7
-  allowSteeringWithoutMovement: 0
+  allowSteeringWOMvm: 0
   speedScale: 1.5
   maxSpeed: 10
   desiredEyeHeight: 0
@@ -875,7 +874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 986fd5a9bfb0c84488e1b7b9ffbc1591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VceInstance
-  tlManager: {fileID: 0}
+  PlayerVehicle: {fileID: 398572726}
   eviConnector: {fileID: 1703673078}
 --- !u!4 &1257781649
 Transform:
@@ -992,7 +991,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1353584726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b27e7aa478e8c3344afccc12cc607297, type: 3}
+  m_Script: {fileID: 11500000, guid: db9fad731d1964343be4d0176733e77f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkGenerator
   sumoOffset: {x: 0, y: 0, z: 0}
@@ -1226,18 +1225,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1703673075}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73ed8c83529036c4d847e4781dfd47b4, type: 3}
+  m_Script: {fileID: 11500000, guid: 570aacd3ee2a741639f72b660f02ada7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EviConnector
   egoVehicleName: ego-vehicle
   EVIAddress: 
   EVIPort: 0
+  netWorker: {fileID: 0}
   stepsWithoutVehicleUpdate: 0
   stepLengthMilliseconds: 100
   extrapolated: 0
   lastUpdate: 0
   settings: {fileID: 0}
-  vehicleManager: {fileID: 849376413}
+  vehicleManager: {fileID: 0}
   networGenerator: {fileID: 1353584731}
 --- !u!1 &1874282704
 GameObject:
@@ -1594,7 +1594,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2117732540}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6b4c017fba8da544b6bcca60ce43ce9, type: 3}
+  m_Script: {fileID: 11500000, guid: ab85d17d8996346c68e9c72cd591148f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BikeUdpReceiver
   steeringUdpPort: 5005
