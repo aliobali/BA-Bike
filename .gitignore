@@ -78,12 +78,9 @@ __pycache__/
 # External asset packs (download separately from asset store)
 /unity/Assets/ALP_Assets/
 /unity/Assets/RayznGames/
-/unity/Assets/TextMesh Pro/
 /unity/Assets/Samples/
 /unity/Assets/TutorialInfo/
-/unity/Assets/NuGet/
 /unity/Assets/Plugins/
-/unity/Assets/Samples/
 
 # Large binary downloads and packages
 *.unitypackage
