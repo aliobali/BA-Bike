@@ -6,6 +6,20 @@
 /obj/
 /bin/
 
+# Unity / project files requested for this repo
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild*/
+[Ll]ogs/
+[Uu]serSettings/
+*.sln
+*.slnx
+*.csproj
+*.lscache
+mono_crash.*
+.utmp/
+
 # Build results
 *.apk
 *.aab
@@ -43,6 +57,11 @@
 .DS_Store
 Thumbs.db
 
+# ESP-IDF
+firmware/**/build/
+sdkconfig
+sdkconfig.old
+
 # Project files
 *.csproj
 *.sln.DotSettings
@@ -56,6 +75,9 @@ tools/__pycache__/
 *.pyc
 venv/
 .venv/
+
+# Misc
+__pycache__/
 
 # Text files (build cache, logs, etc)
 *.txt
